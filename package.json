@@ -4,7 +4,6 @@
   "description": "taggymctagface",
   "main": "main.js",
   "dependencies": {
-    "better-sqlite3": "^5.4.0",
     "discord.js": "^11.4.2",
     "enmap": "^4.8.1"
   },

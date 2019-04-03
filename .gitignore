@@ -32,3 +32,5 @@ db
 db-shm
 
 db-wal
+
+tagDb\.json
