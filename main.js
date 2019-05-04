@@ -1,45 +1,36 @@
-const Discord = require("discord.js");
-const Enmap = require("enmap");
-const fs = require("fs");
+//const Discord = require('discord.js');
+const { CommandoClient } = require('discord.js-commando');
+const SQLite = require("better-sqlite3");
+const sql = new SQLite('./commands.sqlite');
+const path = require('path');
 
-const client = new Discord.Client();
-const token = process.env.taggytoken;
-var tagJson;
+const token = process.env.taggyToken;
+const client = new CommandoClient({
+    commandPrefix: '$',
+    owner: '109705860275539968',
+    disableEveryone: true,
+    unknownCommandResponse: false
+})
 
-try {
-	tagJson = require('./tagDb.json');
-} catch (err) {
-	console.error("You haven't created the tagDb.json file!");
-	console.log(err);
-	process.exit(1);
-}
+client.registry
+    .registerDefaultTypes()
+    .registerGroups([
+        ['custom commands', 'Custom commands, used for invoking resources and helpful links']
+	])
+    .registerCommandsIn(path.join(__dirname, 'commands'));
+client.on('ready', () => {
+    const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='commands';").get();
+    if (!table['count(*)']) {
+        // no table exists, create one and setup the database properly
+        sql.prepare("CREATE TABLE commands (command_id TEXT PRIMARY KEY, server_id TEXT, user_who_added TEXT, command_name TEXT, no_of_uses INTEGER, response TEXT, args TEXT);").run();
+        sql.prepare("CREATE UNIQUE INDEX idx_command_id ON commands (command_id);").run();
+        sql.pragma("synchronous = 1");
+        sql.pragma("journal_mode = wal");
+    }
 
-fs.readdir("./events/", (err, files) => {
-	if (err) return console.error(err);
-	files.forEach(file => {
-		const event = require(`./events/${file}`);
-		let eventName = file.split(".")[0];
-		client.on(eventName, event.bind(null, client));
-	});
-});
+    console.log("Logged in!");
+})
 
-client.commands = new Enmap();
-
-fs.readdir("./commands/", (err, files) => {
-	if (err) return console.error(err);
-	files.forEach(file => {
-	  if (!file.endsWith(".js")) return;
-	  let props = require(`./commands/${file}`);
-	  let commandName = file.split(".")[0];
-	  console.log(`Attempting to load command ${commandName}`);
-	  client.commands.set(commandName, props);
-	});
-  });
-
-client.on("ready", () => {
-	if (tagJson[0] == null) {
-		console.log("here")
-	}
-});
+client.on('error', console.error);
 
 client.login(token);

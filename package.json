@@ -3,11 +3,6 @@
   "version": "1.0.0",
   "description": "taggymctagface",
   "main": "main.js",
-  "dependencies": {
-    "discord.js": "^11.4.2",
-    "enmap": "^4.8.1"
-  },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/SlimShadyIAm/taggymctagface/issues"
   },
-  "homepage": "https://github.com/SlimShadyIAm/taggymctagface#readme"
+  "homepage": "https://github.com/SlimShadyIAm/taggymctagface#readme",
+  "dependencies": {
+    "better-sqlite3": "^5.4.0",
+    "discord.js": "^11.4.2",
+    "discord.js-commando": "^0.10.0"
+  }
 }
