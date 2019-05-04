@@ -18,7 +18,7 @@
   "homepage": "https://github.com/SlimShadyIAm/taggymctagface#readme",
   "dependencies": {
     "better-sqlite3": "^5.4.0",
-    "discord.js": "^11.4.2",
-    "discord.js-commando": "^0.10.0"
+    "discord.js": "github:discordjs/discord.js",
+    "discord.js-commando": "github:discordjs/Commando"
   }
 }

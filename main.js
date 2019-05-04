@@ -9,7 +9,7 @@ const client = new CommandoClient({
     commandPrefix: '$',
     owner: '109705860275539968',
     disableEveryone: true,
-    unknownCommandResponse: false
+    unknownCommandResponse: true
 })
 
 client.registry
@@ -17,6 +17,10 @@ client.registry
     .registerGroups([
         ['custom commands', 'Custom commands, used for invoking resources and helpful links']
 	])
+	.registerDefaultGroups()
+	.registerDefaultCommands({
+		unknownCommand: false
+	  })
     .registerCommandsIn(path.join(__dirname, 'commands'));
 client.on('ready', () => {
     const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='commands';").get();

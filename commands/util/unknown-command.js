@@ -6,19 +6,14 @@ const sql = SQLite('./commands.sqlite');
 module.exports = class UnknownCommandCommand extends Command {
     constructor(client) {
         super(client, {
-            name: 'unknown',
-            group: 'custom commands',
-            memberName: 'unknown',
-            description: 'This command outputs the actual custom commnands',
-            guildOnly: true,
-            examples: [''],
+            name: 'unknown-command',
+            group: 'util',
+            memberName: 'unknown-command',
+            description: 'Displays help information for when an unknown command is used.',
+            examples: ['unknown-command kickeverybodyever'],
             unknown: true,
-            args: [
-            {
-                key: 'command',
-                prompt: 'The command to invoke',
-                type: 'string'
-            },
+            hidden: true,
+            args:[
             {
                 key: 'args',
                 prompt: 'Args for the custom command',
@@ -29,19 +24,20 @@ module.exports = class UnknownCommandCommand extends Command {
         });
     }
 
-    run(msg, { command, args }) {
-        console.log('here')
+    run(msg, { args }) {
+        var command = msg.content.split(' ')[0].slice(1);
         const checkExisting = sql.prepare(`SELECT * FROM commands WHERE command_name = ?`)
         const checkHasArgs = sql.prepare("SELECT * FROM commands WHERE command_name = ? AND args = ?")
 
         if (checkExisting.get(command)) {
-            const response = "";
             if (args !== '' && checkHasArgs.get(command, 'true')) {
-                response += checkHasArgs.response += args;
+                console.log('here1')
+                return msg.say(checkHasArgs.response += args);
             } else {
-                response += checkExisting.response;
+                console.log(checkExisting.get(command).response);
+                return msg.say(checkExisting.get(command).response);
             }
-            msg.channel.say(response);
+            
         }
     }
 }
