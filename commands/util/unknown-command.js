@@ -15,27 +15,31 @@ module.exports = class UnknownCommandCommand extends Command {
             hidden: true,
             args:[
             {
-                key: 'args',
+                key: 'cmd',
                 prompt: 'Args for the custom command',
-                type: 'string',
-                default: ''
+                type: 'string'
             }
             ]
         });
     }
 
-    run(msg, { args }) {
-        var command = msg.content.split(' ')[0].slice(1);
-        const checkExisting = sql.prepare(`SELECT * FROM commands WHERE command_name = ?`)
-        const checkHasArgs = sql.prepare("SELECT * FROM commands WHERE command_name = ? AND args = ?")
-
-        if (checkExisting.get(command)) {
-            if (args !== '' && checkHasArgs.get(command, 'true')) {
-                console.log('here1')
-                return msg.say(checkHasArgs.response += args);
+    run(msg, { cmd }) {
+        var args = msg.content.split(" ")[1];
+        var argsFlag = 'false';
+        if (args) {
+            argsFlag = 'true';
+        }
+        const getCommandFromDb = sql.prepare("SELECT * FROM commands WHERE command_name = ? AND args = ? AND server_id = ?")
+        const incrementUseCounter = sql.prepare ("UPDATE commands SET no_of_uses = ? WHERE command_name = ? AND args = ? AND server_id = ?")
+        // console.log(cmd+ args)
+        if (getCommandFromDb.get(cmd, argsFlag, msg.guild.id)) {
+            var useCounter = getCommandFromDb.get(cmd, argsFlag, msg.guild.id).no_of_uses + 1;
+            incrementUseCounter.run(useCounter, cmd, argsFlag, msg.guild.id);
+            console.log(useCounter)
+            if (argsFlag === 'true' && getCommandFromDb.get(cmd, 'true', msg.guild.id)) {
+                return msg.say(getCommandFromDb.get(cmd, argsFlag, msg.guild.id).response += args);
             } else {
-                console.log(checkExisting.get(command).response);
-                return msg.say(checkExisting.get(command).response);
+                return msg.say(getCommandFromDb.get(cmd, argsFlag, msg.guild.id).response);
             }
             
         }

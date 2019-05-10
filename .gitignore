@@ -34,3 +34,7 @@ db-shm
 db-wal
 
 tagDb\.json
+
+*.sqlite-shm
+
+*.sqlite-wal
