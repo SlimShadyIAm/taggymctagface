@@ -53,6 +53,7 @@ module.exports = class AddCommand extends Command {
             }
             addNewCommand.run(leaderboard);
 
+            response = response.slice(0, 1000) + "...";
             sendSuccessResponse(msg, commandName, args, response);
         } else {
             sendErrorResponse(msg, `Command with name ${commandName} already exists!`)

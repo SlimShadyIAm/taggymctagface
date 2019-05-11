@@ -34,8 +34,8 @@ module.exports = class ListCommand extends Command {
             var inline = true;
             var commandId = thisCommand.command_id;
 
-            if (response.length > 50) {
-                response = response.substring(0, 50)
+            if (response.length > 200) {
+                response = response.substring(0, 200)
                 response += "..."
                 inline = false;
             }
