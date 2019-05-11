@@ -26,7 +26,7 @@ client.on('ready', () => {
     const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='commands';").get();
     if (!table['count(*)']) {
         // no table exists, create one and setup the database properly
-        sql.prepare("CREATE TABLE commands (command_id TEXT PRIMARY KEY, server_id TEXT, user_who_added TEXT, command_name TEXT, no_of_uses INTEGER, response TEXT, args TEXT);").run();
+        sql.prepare("CREATE TABLE commands (command_id INTEGER PRIMARY KEY, server_id TEXT, user_who_added TEXT, command_name TEXT, no_of_uses INTEGER, response TEXT, args TEXT);").run();
         sql.prepare("CREATE UNIQUE INDEX idx_command_id ON commands (command_id);").run();
         sql.pragma("synchronous = 1");
         sql.pragma("journal_mode = wal");

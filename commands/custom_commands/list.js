@@ -25,43 +25,28 @@ module.exports = class ListCommand extends Command {
 
 
         for (const command in allCommandsFromServer) {
-            embed.addField("Command", allCommandsFromServer[command].command_name, true);
-            embed.addField("Response", allCommandsFromServer[command].response, true);
-            embed.addBlankField();
+            var thisCommand = allCommandsFromServer[command];
+            var commandName = thisCommand.command_name;
+            var acceptsArgs = thisCommand.args;
+            var response = thisCommand.response;
+            var noOfUses = thisCommand.no_of_uses;
+            var userId = thisCommand.user_who_added;
+            var inline = true;
+            var commandId = thisCommand.command_id;
+
+            if (response.length > 50) {
+                response = response.substring(0, 50)
+                response += "..."
+                inline = false;
+            }
+            if (acceptsArgs === 'true') {
+                response += "<arg>"
+            }
+            embed.addField(`$${commandName}`, `**Accepts arguments**: ${acceptsArgs}\n**Response**: ${response}\n**Number of times invoked**: ${noOfUses}\n **Creator of command**: <@${userId}>\n **ID:** ${commandId}`, inline)
         }
         return msg.channel.send({
             embed
         });
-
-        function sendSuccessResponse(msg, commandName, args, response) {
-            msg.channel.send({
-                embed: {
-                    color: 4159791,
-                    title: `Successfully added command to the leaderboard!`,
-                    fields: [{
-                            "name": "Command",
-                            "value": commandName,
-                            "inline": true
-                        },
-                        {
-                            "name": "Creator",
-                            "value": `<@${msg.author.id}>`,
-                            "inline": true
-                        },
-                        {
-                            "name": "Response",
-                            "value": response,
-                            "inline": true
-                        },
-                        {
-                            "name": "Arguments supported?",
-                            "value": args,
-                            "inline": true
-                        }
-                    ]
-                }
-            })
-        }
 
         function sendErrorResponse(msg, text) {
             msg.channel.send({

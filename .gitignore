@@ -38,3 +38,5 @@ tagDb\.json
 *.sqlite-shm
 
 *.sqlite-wal
+
+*.sqlite

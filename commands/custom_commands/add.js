@@ -43,7 +43,7 @@ module.exports = class AddCommand extends Command {
 
         if (!checkExisting.get(commandName, args)) {
             const leaderboard = {
-                command_id: generateCommandID(Number.MAX_SAFE_INTEGER),
+                command_id: generateCommandID(100000),
                 server_id: msg.guild.id,
                 user_who_added: msg.author.id,
                 command_name: commandName,
