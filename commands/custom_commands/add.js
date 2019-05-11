@@ -65,7 +65,7 @@ module.exports = class AddCommand extends Command {
         function sendSuccessResponse(msg, commandName, args, response) {
             msg.channel.send({
                 embed: {
-                    color: 4159791,
+                    color: 1558399,
                     title: `Successfully added command to the leaderboard!`,
                     fields: [{
                             "name": "Command",

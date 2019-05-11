@@ -21,8 +21,12 @@ module.exports = class ListCommand extends Command {
         const allCommandsFromServer = sql.prepare(`SELECT * FROM commands WHERE server_id = '${msg.guild.id}'`).all();
          const embed = new MessageEmbed()
             .setTitle(`All commands for guild ${msg.guild.name}`)
-            .setDescription("You look cute today by the way :)");
+            .setDescription("You look cute today by the way :)")
+            .setColor(7506394);
 
+        if (allCommandsFromServer.length == 0) {
+            return sendErrorResponse(msg, "There are no commands added for this server! Please add some using the `$add` command. See `$help `for more information.")
+        }
 
         for (const command in allCommandsFromServer) {
             var thisCommand = allCommandsFromServer[command];

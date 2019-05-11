@@ -45,7 +45,7 @@ module.exports = class DeleteCommand extends Command {
         function sendSuccessResponse(id, command, author, noOfUses) {
             msg.channel.send({
                 embed: {
-                    color: 4159791,
+                    color: 1558399,
                     title: `Successfully deleted command!`,
                     fields: [{
                             "name": "Command",
