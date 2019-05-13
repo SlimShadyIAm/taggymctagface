@@ -7,6 +7,7 @@ const {
 const {
     StringStream
 } = require("scramjet");
+const board2device = require("../../boardnamedevices.json")
 const request = require("request");
 const csv = require('csvtojson');
 const csvUrl = "http://cros-updates-serving.appspot.com/csv";
@@ -32,12 +33,16 @@ module.exports = class CrosServingCommand extends Command {
     run(msg, { board }) {
         var data;
         var tempCsv;
-        var embed = new MessageEmbed();        
+        var embed = new MessageEmbed();
         if (board !== '') {
-            msg.channel.startTyping();
-            parseCsv(embed, csvUrl, board)
-            msg.channel.stopTyping();
-            return;
+            if (board in board2device) {
+                msg.channel.startTyping();
+                parseCsv(embed, csvUrl, board)
+                msg.channel.stopTyping();
+                return;
+            } else {
+                return sendErrorResponse(msg, `Board ${board} does not exist! Please use a valid board name.`)
+            }
         } else {
            return msg.channel.send("http://cros-updates-serving.appspot.com/")
         }
