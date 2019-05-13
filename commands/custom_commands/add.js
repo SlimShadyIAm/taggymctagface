@@ -40,6 +40,11 @@ module.exports = class AddCommand extends Command {
     run(msg, { commandName, args, response }) {
         const checkExisting = sql.prepare(`SELECT * FROM commands WHERE command_name = ? AND args = ?;`)
         const addNewCommand = sql.prepare("INSERT OR REPLACE INTO commands (command_id, server_id, user_who_added, command_name, no_of_uses, response, args) VALUES (@command_id, @server_id, @user_who_added, @command_name, @no_of_uses, @response, @args)")
+        var test = RegExp('^[a-zA-Z0-9_-]*$');
+
+        if (!test.test(commandName)) {
+            return sendErrorResponse(msg, "Your command name has illegal characters! Please make sure it contains only the following: `A-Z, a-z, 0-9, _, -`")
+        }
 
         if (args !== 'true' && args !== 'false') {
             return sendErrorResponse(msg, "Please specify whether you want arguments or not! See `$help` for the command usage.")

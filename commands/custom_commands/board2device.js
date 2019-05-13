@@ -25,6 +25,13 @@ module.exports = class Board2DeviceCommand extends Command {
     }
 
     run(msg, { board }) {
+        var test = RegExp('^[a-zA-Z]*$');
+
+        if(!test.test(board)) {
+            return sendErrorResponse(msg, "Hey! Looks like you had some illegal characters in there!")
+        }
+        board = board.toLowerCase();
+        
         if (board in board2device) {
             const embed = new MessageEmbed()
                 .setColor(7506394)

@@ -34,6 +34,13 @@ module.exports = class CrosServingCommand extends Command {
         var data;
         var tempCsv;
         var embed = new MessageEmbed();
+
+        var test = RegExp('^[a-zA-Z]*$');
+
+        if (board !== '' && !test.test(board)) {
+            return sendErrorResponse(msg, "Your board name contained illegal characters! Make sure you only use alphabetical lettters.")
+        }
+
         if (board !== '') {
             if (board in board2device) {
                 msg.channel.startTyping();

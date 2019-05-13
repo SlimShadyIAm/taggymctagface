@@ -25,6 +25,12 @@ module.exports = class Device2BoardCommand extends Command {
     }
 
     run(msg, { device }) {
+        var test = RegExp('^[a-zA-Z0-9_\(\) -]*$');
+
+        if(!test.test(device)) {
+            return sendErrorResponse(msg, "Hey! Looks like you had some illegal characters in there!")
+        }
+
         var boardArray = getKeyByValue(board2device, device);
 
         if (boardArray.length == 0) {
@@ -36,9 +42,17 @@ module.exports = class Device2BoardCommand extends Command {
                 .setColor(7506394)
 
             for (const board in boardArray) {
-                embed.addField(`${i}.`, boardArray[i-1], true);
+                
+                if (i > 5) {
+                    embed.setDescription("These results were limited to the first 5 found. Please use a more precise query.")
+                    break;
+                } else {
+                    embed.addField(`${i}. ${boardArray[i-1]}`, `${board2device[boardArray[i-1]]}`, true);
+                }
                 i++;
+                
             }
+            
             return msg.channel.send({ embed })
         }
 

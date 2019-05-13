@@ -29,6 +29,11 @@ module.exports = class DeleteCommand extends Command {
     run(msg, { id }) {
         const checkExisting = sql.prepare(`SELECT * FROM commands WHERE server_id = '${msg.guild.id}' AND command_id = ?;`)
         const deleteCommand = sql.prepare(`DELETE FROM commands WHERE server_id = '${msg.guild.id}' AND command_id = ?`)
+        var test = RegExp('^[0-9]*$');
+
+        if (!test.test(id)) {
+            return sendErrorResponse(msg, "Your command ID contained illegal characters! Only numbers 0-9 are allowed. Make sure you're using the command ID from `$ls`, not the command name!")
+        }
 
         if (checkExisting.get(id)) {
             var command = "$" + checkExisting.get(id).command_name;
