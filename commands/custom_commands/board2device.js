@@ -4,8 +4,6 @@ const {
 const {
     MessageEmbed
 } = require('discord.js');
-const SQLite = require("better-sqlite3");
-const sql = SQLite('./commands.sqlite');
 const board2device = require("../../boardnamedevices.json")
 
 module.exports = class Board2DeviceCommand extends Command {
