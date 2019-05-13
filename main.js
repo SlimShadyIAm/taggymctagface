@@ -18,9 +18,6 @@ client.registry
         ['custom commands', 'Custom commands, used for invoking resources and helpful links']
 	])
 	.registerDefaultGroups()
-	.registerDefaultCommands({
-		unknownCommand: false
-	  })
     .registerCommandsIn(path.join(__dirname, 'commands'));
 client.on('ready', () => {
     const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='commands';").get();

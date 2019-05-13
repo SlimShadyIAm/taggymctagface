@@ -41,6 +41,10 @@ module.exports = class AddCommand extends Command {
         const checkExisting = sql.prepare(`SELECT * FROM commands WHERE command_name = ? AND args = ?;`)
         const addNewCommand = sql.prepare("INSERT OR REPLACE INTO commands (command_id, server_id, user_who_added, command_name, no_of_uses, response, args) VALUES (@command_id, @server_id, @user_who_added, @command_name, @no_of_uses, @response, @args)")
 
+        if (args !== 'true' && args !== 'false') {
+            return sendErrorResponse(msg, "Please specify whether you want arguments or not! See `$help` for the command usage.")
+        }
+
         if (!checkExisting.get(commandName, args)) {
             const leaderboard = {
                 command_id: generateCommandID(100000),
