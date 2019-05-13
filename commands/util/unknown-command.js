@@ -24,7 +24,11 @@ module.exports = class UnknownCommandCommand extends Command {
     }
 
     run(msg, { cmd }) {
-        var args = msg.content.split(" ")[1];
+        var argsArray= msg.content.split(" ");
+        var args = "";
+        for (var i = 1; i<argsArray.length; i++) {
+            args += argsArray[i] + " ";
+        }
         var argsFlag = 'false';
         if (args) {
             argsFlag = 'true';
@@ -37,11 +41,29 @@ module.exports = class UnknownCommandCommand extends Command {
             incrementUseCounter.run(useCounter, cmd, argsFlag, msg.guild.id);
             console.log(useCounter)
             if (argsFlag === 'true' && getCommandFromDb.get(cmd, 'true', msg.guild.id)) {
-                return msg.say(getCommandFromDb.get(cmd, argsFlag, msg.guild.id).response += args);
+                var response = getCommandFromDb.get(cmd, argsFlag, msg.guild.id).response;
+                if (isUrl(response)) {
+                    for (var i = 1; i<argsArray.length; i++) {
+                        response += argsArray[i];
+                        if (i != argsArray.length -1) {
+                            response += "%20";
+                        }
+                    }
+                } else {
+                    response += " "
+                    for (var i = 1; i<argsArray.length; i++) {
+                        response += argsArray[i] + " ";
+                    }
+                }
+                return msg.say(response);
             } else {
                 return msg.say(getCommandFromDb.get(cmd, argsFlag, msg.guild.id).response);
             }
             
         }
+        function isUrl(s) {
+            var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+            return regexp.test(s);
+         }
     }
 }

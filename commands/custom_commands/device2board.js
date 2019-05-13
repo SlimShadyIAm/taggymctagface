@@ -25,7 +25,7 @@ module.exports = class Device2BoardCommand extends Command {
     }
 
     run(msg, { device }) {
-        var test = RegExp('^[a-zA-Z0-9_\(\) -]*$');
+        var test = RegExp('^[a-zA-Z0-9_\(\)&,/ -]*$');
 
         if(!test.test(device)) {
             return sendErrorResponse(msg, "Hey! Looks like you had some illegal characters in there!")
