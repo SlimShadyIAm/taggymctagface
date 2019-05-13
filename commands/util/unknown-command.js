@@ -39,7 +39,6 @@ module.exports = class UnknownCommandCommand extends Command {
         if (getCommandFromDb.get(cmd, argsFlag, msg.guild.id)) {
             var useCounter = getCommandFromDb.get(cmd, argsFlag, msg.guild.id).no_of_uses + 1;
             incrementUseCounter.run(useCounter, cmd, argsFlag, msg.guild.id);
-            console.log(useCounter)
             if (argsFlag === 'true' && getCommandFromDb.get(cmd, 'true', msg.guild.id)) {
                 var response = getCommandFromDb.get(cmd, argsFlag, msg.guild.id).response;
                 if (isUrl(response)) {
