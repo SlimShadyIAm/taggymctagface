@@ -48,8 +48,6 @@ client.on("ready", () => {
 
 	console.log("Logged in!");
 
-	getUpdatedJSON();
-
 	setTimeout(function() {
 		getUpdatedJSON();
 	}, 21600000);
