@@ -74,5 +74,4 @@ function getUpdatedJSON() {
 }
 
 client.on("error", console.error);
-
 client.login(token);
