@@ -1,7 +1,5 @@
 const { Command } = require("discord.js-commando");
 const { MessageEmbed } = require("discord.js");
-const board2device = require("../../boardnamedevices.json");
-const crosServingObj = require("../../crosserving.json");
 
 module.exports = class CrosServingCommand extends Command {
 	constructor(client) {
@@ -24,6 +22,14 @@ module.exports = class CrosServingCommand extends Command {
 	}
 
 	run(msg, { board }) {
+		for (const path in require.cache) {
+			if (path.endsWith(".json")) {
+				// only clear *.js, not *.node
+				delete require.cache[path];
+			}
+		}
+		const board2device = require("../../boardnamedevices.json");
+		const crosServingObj = require("../../crosserving.json");
 		var embed = new MessageEmbed();
 		var test = RegExp("^[a-zA-Z]*$");
 		if (board !== "" && !test.test(board)) {
@@ -60,17 +66,18 @@ module.exports = class CrosServingCommand extends Command {
 		function pushUpdate(board, embed, csvRow) {
 			// \n is being escaped in the string for each row. Fix this.
 			// Also add "Version:" and "Platform:" in relevant locations in string
+			var tempCsv = csvRow;
 			for (var i = 5; i < 9; i++) {
-				csvRow[i] = csvRow[i]
+				tempCsv[i] = tempCsv[i]
 					.replace(/^/, "**Platform**:  ")
 					.replace("\\n", "\r\n**Version**: ");
 			}
 			return embed
 				.setTitle(`Cros Serving Updates results for ${board}`)
-				.addField("Stable Channel", csvRow[5], true)
-				.addField("Beta Channel", csvRow[6], true)
-				.addField("Dev Channel", csvRow[7], true)
-				.addField("Canary Channel", csvRow[8], true)
+				.addField("Stable Channel", tempCsv[5], true)
+				.addField("Beta Channel", tempCsv[6], true)
+				.addField("Dev Channel", tempCsv[7], true)
+				.addField("Canary Channel", tempCsv[8], true)
 				.setColor(7506394)
 				.setFooter("Powered by https://cros-updates.netlify.com/ (by Skylar)");
 		}

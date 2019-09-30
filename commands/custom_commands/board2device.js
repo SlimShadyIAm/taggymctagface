@@ -1,6 +1,5 @@
 const { Command } = require("discord.js-commando");
 const { MessageEmbed } = require("discord.js");
-const board2device = require("../../boardnamedevices.json");
 
 module.exports = class Board2DeviceCommand extends Command {
 	constructor(client) {
@@ -22,6 +21,13 @@ module.exports = class Board2DeviceCommand extends Command {
 	}
 
 	run(msg, { board }) {
+		for (const path in require.cache) {
+			if (path.endsWith(".json")) {
+				// only clear *.js, not *.node
+				delete require.cache[path];
+			}
+		}
+		const board2device = require("../../boardnamedevices.json");
 		var test = RegExp("^[a-zA-Z]*$");
 
 		if (!test.test(board)) {
@@ -36,9 +42,7 @@ module.exports = class Board2DeviceCommand extends Command {
 			const embed = new MessageEmbed()
 				.setColor(7506394)
 				.setDescription(
-					`Board **${board}** belongs to the following device(s): **${
-						board2device[board]
-					}**`
+					`Board **${board}** belongs to the following device(s): **${board2device[board]}**`
 				);
 			return msg.channel.send({ embed });
 		} else {
