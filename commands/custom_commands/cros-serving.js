@@ -58,6 +58,13 @@ module.exports = class CrosServingCommand extends Command {
 		}
 
 		function pushUpdate(board, embed, csvRow) {
+			// \n is being escaped in the string for each row. Fix this.
+			// Also add "Version:" and "Platform:" in relevant locations in string
+			for (var i = 5; i < 9; i++) {
+				csvRow[i] = csvRow[i]
+					.replace(/^/, "**Platform**:  ")
+					.replace("\\n", "\r\n**Version**: ");
+			}
 			return embed
 				.setTitle(`Cros Serving Updates results for ${board}`)
 				.addField("Stable Channel", csvRow[5], true)
