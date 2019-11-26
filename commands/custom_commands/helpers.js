@@ -15,6 +15,11 @@ module.exports = class HelpersCommand extends Command {
     }
 
     run(msg) {
+        if (msg.channel.name !== "support") {
+            msg.channel.send("This command is only usable in #support!");
+            return;
+        }
+
         var helpersRole = msg.guild.roles.find(role => role.name === "Helpers");
         var pingCooldown = pingUsers.find(user => user.id === msg.author.id);
 
