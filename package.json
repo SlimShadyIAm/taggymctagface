@@ -24,6 +24,7 @@
     "discord.js": "github:discordjs/discord.js",
     "discord.js-commando": "github:discordjs/Commando",
     "request": "^2.88.0",
-    "scramjet": "^4.23.2"
+    "scramjet": "^4.23.2",
+    "timediff": "^1.1.1"
   }
 }
