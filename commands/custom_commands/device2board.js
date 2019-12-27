@@ -1,6 +1,7 @@
 const { Command } = require("discord.js-commando");
 const { MessageEmbed } = require("discord.js");
-const board2device = require("../../boardnamedevices.json");
+const request = require("request");
+const cheerio = require("cheerio");
 
 module.exports = class Device2BoardCommand extends Command {
 	constructor(client) {
@@ -22,45 +23,63 @@ module.exports = class Device2BoardCommand extends Command {
 	}
 
 	run(msg, { device }) {
-		var test = RegExp("^[a-zA-Z0-9_()&,/ -]*$");
+		msg.channel.startTyping();
+		getB2dData();
+		msg.channel.stopTyping();
 
-		if (!test.test(device)) {
-			return sendErrorResponse(
-				msg,
-				"Hey! Looks like you had some illegal characters in there!"
-			);
-		}
+		function getB2dData() {
+			request(
+				"https://dark-nova.me/chromeos/boardnamedevices-2.json",
+				function(error, response, html) {
+					if (!error && response.statusCode == 200) {
+						var $ = cheerio.load(html);
+						var obj = JSON.parse($.text());
+						var board2device = obj;
+						var test = RegExp("^[a-zA-Z0-9_()&,/ -]*$");
 
-		var boardArray = getKeyByValue(board2device, device);
+						if (!test.test(device)) {
+							return sendErrorResponse(
+								msg,
+								"Hey! Looks like you had some illegal characters in there!"
+							);
+						}
 
-		if (boardArray.length == 0) {
-			return sendErrorResponse(
-				msg,
-				`Sorry, we couldn't find any boards with device name ${device}!`
-			);
-		} else {
-			var i = 1;
-			const embed = new MessageEmbed()
-				.setTitle(`Board(s) found with device name ${device}`)
-				.setColor(7506394);
+						var boardArray = getKeyByValue(board2device, device);
 
-			for (const board in boardArray) {
-				if (i > 5) {
-					embed.setDescription(
-						"These results were limited to the first 5 found. Please use a more precise query."
-					);
-					break;
-				} else {
-					embed.addField(
-						`${i}. ${boardArray[i - 1]}`,
-						`${board2device[boardArray[i - 1]]}`,
-						true
-					);
+						if (boardArray.length == 0) {
+							return sendErrorResponse(
+								msg,
+								`Sorry, we couldn't find any boards with device name ${device}!`
+							);
+						} else {
+							var i = 1;
+							const embed = new MessageEmbed()
+								.setTitle(
+									`Board(s) found with device name ${device}`
+								)
+								.setColor(7506394);
+
+							for (const board in boardArray) {
+								if (i > 5) {
+									embed.setDescription(
+										"These results were limited to the first 5 found. Please use a more precise query."
+									);
+									break;
+								} else {
+									embed.addField(
+										`${i}. ${boardArray[i - 1]}`,
+										`${board2device[boardArray[i - 1]]}`,
+										true
+									);
+								}
+								i++;
+							}
+
+							return msg.channel.send({ embed });
+						}
+					}
 				}
-				i++;
-			}
-
-			return msg.channel.send({ embed });
+			);
 		}
 
 		function getKeyByValue(object, value) {

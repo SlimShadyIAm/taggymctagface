@@ -1,5 +1,10 @@
 const { Command } = require("discord.js-commando");
 const { MessageEmbed } = require("discord.js");
+const { StringStream } = require("scramjet");
+const csv = require("csvtojson");
+const request = require("request");
+const csvUrl =
+	"https://raw.githubusercontent.com/skylartaylor/cros-updates/master/src/data/cros-updates.csv";
 
 module.exports = class CrosServingCommand extends Command {
 	constructor(client) {
@@ -22,44 +27,29 @@ module.exports = class CrosServingCommand extends Command {
 	}
 
 	run(msg, { board }) {
-		for (const path in require.cache) {
-			if (path.endsWith(".json")) {
-				// only clear *.js, not *.node
-				delete require.cache[path];
-			}
-		}
-		const board2device = require("../../boardnamedevices.json");
-		const crosServingObj = require("../../crosserving.json");
+		msg.channel.startTyping();
 		var embed = new MessageEmbed();
-		var test = RegExp("^[a-zA-Z]*$");
-		if (board !== "" && !test.test(board)) {
-			return sendErrorResponse(
-				msg,
-				"Your board name contained illegal characters! Make sure you only use alphabetical lettters."
-			);
-		}
-
-		if (board !== "") {
-			if (board in board2device) {
-				findBoardData(embed, board);
-				return;
-			} else {
-				return sendErrorResponse(
-					msg,
-					`Board ${board} does not exist! Please use a valid board name.`
-				);
-			}
-		} else {
-			return msg.channel.send("http://cros-updates-serving.appspot.com/");
-		}
-
+		var crosServingObj;
+		parseCsv(csvUrl);
+		msg.channel.stopTyping();
 		function findBoardData(embed, board) {
 			// use the locally cached version data from cros-serving to get cros-serving info
 			// for the inputted device
+			var found = false;
 			for (var i = 0; i < crosServingObj.length; i++) {
 				if (crosServingObj[i][0] === board) {
-					msg.channel.send(pushUpdate(board, embed, crosServingObj[i]));
+					found = true;
+					msg.channel.send(
+						pushUpdate(board, embed, crosServingObj[i])
+					);
 				}
+			}
+
+			if (!found) {
+				sendErrorResponse(
+					msg,
+					`Board ${board} does not exist! Please use a valid board name.`
+				);
 			}
 		}
 
@@ -79,7 +69,9 @@ module.exports = class CrosServingCommand extends Command {
 				.addField("Dev Channel", tempCsv[7], true)
 				.addField("Canary Channel", tempCsv[8], true)
 				.setColor(7506394)
-				.setFooter("Powered by https://cros-updates.netlify.com/ (by Skylar)");
+				.setFooter(
+					"Powered by https://cros-updates.netlify.com/ (by Skylar)"
+				);
 		}
 
 		function sendErrorResponse(msg, text) {
@@ -90,6 +82,49 @@ module.exports = class CrosServingCommand extends Command {
 					description: text
 				}
 			});
+		}
+		function parseCsv(url) {
+			// this function parses the actual remote CSV file
+			var tempCsv = {};
+			request
+				.get(url)
+				.pipe(new StringStream())
+				.consume(object => (tempCsv += object))
+				.then(() => {
+					csv({
+						noheader: true,
+						output: "csv"
+					})
+						.fromString(tempCsv)
+						.then(csv => {
+							crosServingObj = csv;
+							var test = RegExp("^[a-zA-Z]*$");
+							if (board !== "" && !test.test(board)) {
+								return sendErrorResponse(
+									msg,
+									"Your board name contained illegal characters! Make sure you only use alphabetical lettters."
+								);
+							}
+
+							if (board !== "") {
+								findBoardData(embed, board);
+								return;
+							} else {
+								return msg.channel.send(
+									"http://cros-updates-serving.appspot.com/"
+								);
+							}
+						});
+				});
+			// our output (csvRow) looks something like this...
+			// [
+			//     [1, 2, 3],
+			//     [4, 5, 6],
+			//     [7, 8, 9]
+			// ]
+			// we then want to compare the new copy of data
+			// to the old copy of the data, to see if we have
+			// new updates available
 		}
 	}
 };
