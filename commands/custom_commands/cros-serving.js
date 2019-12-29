@@ -10,6 +10,7 @@ module.exports = class CrosServingCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: "cros-serving",
+			aliases: ["updates", "cros-updates"],
 			group: "custom commands",
 			memberName: "cros-serving",
 			description: "Fetch details from the Cros-Serving website",
