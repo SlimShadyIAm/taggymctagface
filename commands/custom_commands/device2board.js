@@ -83,7 +83,7 @@ module.exports = class Device2BoardCommand extends Command {
 							"Problem reaching feed :("
 						);
 					}
-				
+				}
 			);
 		}
 
