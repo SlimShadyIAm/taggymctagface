@@ -25,6 +25,12 @@ module.exports = class Board2DeviceCommand extends Command {
 	run(msg, { board }) {
 		var board2device;
 		var test = RegExp("^[a-zA-Z]*$");
+		if (!test.test(board)) {
+			return sendErrorResponse(
+				msg,
+				"Hey! Looks like you had some illegal characters in there!"
+			);
+		}
 		msg.channel.startTyping();
 		updateLocalBoardInfo();
 		msg.channel.stopTyping();
@@ -37,14 +43,9 @@ module.exports = class Board2DeviceCommand extends Command {
 						var $ = cheerio.load(html);
 						var obj = JSON.parse($.text());
 						board2device = obj;
-						if (!test.test(board)) {
-							return sendErrorResponse(
-								msg,
-								"Hey! Looks like you had some illegal characters in there!"
-							);
-						}
-						board = board.toLowerCase();
 
+						board = board.toLowerCase();
+						console.log(board2device);
 						if (board in board2device) {
 							const embed = new MessageEmbed()
 								.setColor(7506394)
@@ -58,6 +59,11 @@ module.exports = class Board2DeviceCommand extends Command {
 								`Board **${board}** does not exist! Please enter a valid board name`
 							);
 						}
+					} else {
+						return sendErrorResponse(
+							msg,
+							"Problem reaching feed :("
+						);
 					}
 				}
 			);

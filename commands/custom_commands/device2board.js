@@ -77,8 +77,13 @@ module.exports = class Device2BoardCommand extends Command {
 
 							return msg.channel.send({ embed });
 						}
+					} else {
+						return sendErrorResponse(
+							msg,
+							"Problem reaching feed :("
+						);
 					}
-				}
+				
 			);
 		}
 
