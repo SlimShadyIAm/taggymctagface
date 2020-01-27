@@ -36,7 +36,6 @@ module.exports = class UnknownCommandCommand extends Command {
 		}
 
 		cmd = derriveCmd(msg.content);
-		console.log(cmd);
 
 		const getCommandFromDb = sql.prepare(
 			"SELECT * FROM commands WHERE command_name = ? AND args = ? AND server_id = ?"
@@ -45,11 +44,10 @@ module.exports = class UnknownCommandCommand extends Command {
 			"UPDATE commands SET no_of_uses = ? WHERE command_name = ? AND args = ? AND server_id = ?"
 		);
 
-		console.log(getCommandFromDb.get(cmd, "true", msg.guild.id));
 		if (getCommandFromDb.get(cmd, argsFlag, msg.guild.id)) {
-			console.log("here2");
 			var useCounter =
-				getCommandFromDb.get(cmd, argsFlag, msg.guild.id).no_of_uses + 1;
+				getCommandFromDb.get(cmd, argsFlag, msg.guild.id).no_of_uses +
+				1;
 			incrementUseCounter.run(useCounter, cmd, argsFlag, msg.guild.id);
 			if (
 				argsFlag === "true" &&

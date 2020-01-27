@@ -41,25 +41,20 @@ module.exports = class HelpersCommand extends Command {
 				);
 			}
 		} else {
+			pingUsers.push({ id: msg.author.id, time: Date.now() });
 			sendPing(msg, helpersRole);
 		}
-
-		pingUsers.push({ id: msg.author.id, time: Date.now() });
-		pingUsers.push({ id: msg.author.id, time: Date.now() });
 	}
 };
 function sendPing(msg, helpersRole) {
-	helpersRole
-		.setMentionable(true, "Role needs to be pinged!")
-		.then(() => {
-			msg.channel.send(
-				`<@${msg.author.id}> pinged <@&${helpersRole.id}>`
-			);
-		})
-		.then(() => {
-			helpersRole.setMentionable(
-				false,
-				"Role doesn't need to be pinged anymore!"
-			);
-		});
+	helpersRole.setMentionable(true, "Role needs to be pinged!").then(() => {
+		msg.channel
+			.send(`<@${msg.author.id}> pinged <@&${helpersRole.id}>`)
+			.then(() => {
+				helpersRole.setMentionable(
+					false,
+					"Role doesn't need to be pinged anymore!"
+				);
+			});
+	});
 }

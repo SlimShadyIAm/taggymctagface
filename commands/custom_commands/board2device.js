@@ -37,17 +37,14 @@ module.exports = class Board2DeviceCommand extends Command {
 
 		function updateLocalBoardInfo() {
 			request(
-				"https://raw.githubusercontent.com/skylartaylor/cros-updates/master/src/data/cros-updates.json",
+				"https://dark-nova.me/chromeos/boardnamedevices-2.json",
 				function(error, response, html) {
 					if (!error && response.statusCode == 200) {
 						var $ = cheerio.load(html);
-						var obj = JSON.parse($.text());
-						for (item in obj) {
-							console.log(item);
-						}
+						var board2device = JSON.parse($.text());
 
 						board = board.toLowerCase();
-						console.log(board2device);
+
 						if (board in board2device) {
 							const embed = new MessageEmbed()
 								.setColor(7506394)
