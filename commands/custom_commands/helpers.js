@@ -29,7 +29,7 @@ module.exports = class HelpersCommand extends Command {
 				Date.now(),
 				"H"
 			).hours;
-			if (howLongAgoLastPing > 3) {
+			if (howLongAgoLastPing > 12) {
 				sendPing(msg, helpersRole);
 
 				var index = pingUsers.indexOf(pingCooldown);
