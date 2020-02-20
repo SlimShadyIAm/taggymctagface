@@ -38,6 +38,7 @@ module.exports = class CrosServingCommand extends Command {
 			// for the inputted device
 			var found = false;
 			for (var i = 0; i < crosServingObj.length; i++) {
+				console.log(crosServingObj[i]);
 				if (crosServingObj[i][0] === board) {
 					found = true;
 					msg.channel.send(

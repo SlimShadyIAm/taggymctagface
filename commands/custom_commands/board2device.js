@@ -1,7 +1,10 @@
 const { Command } = require("discord.js-commando");
 const { MessageEmbed } = require("discord.js");
+const { StringStream } = require("scramjet");
+const csv = require("csvtojson");
 const request = require("request");
-const cheerio = require("cheerio");
+const csvUrl =
+	"https://raw.githubusercontent.com/skylartaylor/cros-updates/master/src/data/cros-updates.csv";
 
 module.exports = class Board2DeviceCommand extends Command {
 	constructor(client) {
@@ -23,7 +26,6 @@ module.exports = class Board2DeviceCommand extends Command {
 	}
 
 	run(msg, { board }) {
-		var board2device;
 		var test = RegExp("^[a-zA-Z]*$");
 		if (!test.test(board)) {
 			return sendErrorResponse(
@@ -32,40 +34,43 @@ module.exports = class Board2DeviceCommand extends Command {
 			);
 		}
 		msg.channel.startTyping();
-		updateLocalBoardInfo();
+		parseCsv(csvUrl);
 		msg.channel.stopTyping();
 
-		function updateLocalBoardInfo() {
-			request(
-				"https://dark-nova.me/chromeos/boardnamedevices-2.json",
-				function(error, response, html) {
-					if (!error && response.statusCode == 200) {
-						var $ = cheerio.load(html);
-						var board2device = JSON.parse($.text());
-
-						board = board.toLowerCase();
-
-						if (board in board2device) {
-							const embed = new MessageEmbed()
-								.setColor(7506394)
-								.setDescription(
-									`Board **${board}** belongs to the following device(s): **${board2device[board]}**`
+		function parseCsv(url) {
+			// this function parses the actual remote CSV file
+			var tempCsv = {};
+			request
+				.get(url)
+				.pipe(new StringStream())
+				.consume(object => (tempCsv += object))
+				.then(() => {
+					csv({
+						noheader: true,
+						output: "csv"
+					})
+						.fromString(tempCsv)
+						.then(csvObj => {
+							var found = false;
+							csvObj.forEach(device => {
+								if (device[0] == board) {
+									const embed = new MessageEmbed()
+										.setColor(7506394)
+										.setDescription(
+											`Board **${board}** belongs to the following device(s): **${device[10]}**`
+										);
+									found = true;
+									return msg.channel.send({ embed });
+								}
+							});
+							if (!found) {
+								return sendErrorResponse(
+									msg,
+									`Board **${board}** does not exist! Please enter a valid board name`
 								);
-							return msg.channel.send({ embed });
-						} else {
-							return sendErrorResponse(
-								msg,
-								`Board **${board}** does not exist! Please enter a valid board name`
-							);
-						}
-					} else {
-						return sendErrorResponse(
-							msg,
-							"Problem reaching feed :("
-						);
-					}
-				}
-			);
+							}
+						});
+				});
 		}
 
 		function sendErrorResponse(msg, text) {

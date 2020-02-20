@@ -1,7 +1,10 @@
 const { Command } = require("discord.js-commando");
 const { MessageEmbed } = require("discord.js");
+const { StringStream } = require("scramjet");
+const csv = require("csvtojson");
 const request = require("request");
-const cheerio = require("cheerio");
+const csvUrl =
+	"https://raw.githubusercontent.com/skylartaylor/cros-updates/master/src/data/cros-updates.csv";
 
 module.exports = class Device2BoardCommand extends Command {
 	constructor(client) {
@@ -23,77 +26,76 @@ module.exports = class Device2BoardCommand extends Command {
 	}
 
 	run(msg, { device }) {
-		msg.channel.startTyping();
-		getB2dData();
-		msg.channel.stopTyping();
+		var test = RegExp("^[a-zA-Z0-9_()&,/ -]*$");
 
-		function getB2dData() {
-			request(
-				"https://dark-nova.me/chromeos/boardnamedevices-2.json",
-				function(error, response, html) {
-					if (!error && response.statusCode == 200) {
-						var $ = cheerio.load(html);
-						var obj = JSON.parse($.text());
-						var board2device = obj;
-						var test = RegExp("^[a-zA-Z0-9_()&,/ -]*$");
-
-						if (!test.test(device)) {
-							return sendErrorResponse(
-								msg,
-								"Hey! Looks like you had some illegal characters in there!"
-							);
-						}
-
-						var boardArray = getKeyByValue(board2device, device);
-
-						if (boardArray.length == 0) {
-							return sendErrorResponse(
-								msg,
-								`Sorry, we couldn't find any boards with device name ${device}!`
-							);
-						} else {
-							var i = 1;
-							const embed = new MessageEmbed()
-								.setTitle(
-									`Board(s) found with device name ${device}`
-								)
-								.setColor(7506394);
-
-							for (const board in boardArray) {
-								if (i > 5) {
-									embed.setDescription(
-										"These results were limited to the first 5 found. Please use a more precise query."
-									);
-									break;
-								} else {
-									embed.addField(
-										`${i}. ${boardArray[i - 1]}`,
-										`${board2device[boardArray[i - 1]]}`,
-										true
-									);
-								}
-								i++;
-							}
-
-							return msg.channel.send({ embed });
-						}
-					} else {
-						return sendErrorResponse(
-							msg,
-							"Problem reaching feed :("
-						);
-					}
-				}
+		if (!test.test(device)) {
+			return sendErrorResponse(
+				msg,
+				"Hey! Looks like you had some illegal characters in there!"
 			);
+		}
+
+		msg.channel.startTyping();
+		parseCsv(csvUrl);
+		msg.channel.stopTyping();
+		function parseCsv(url) {
+			// this function parses the actual remote CSV file
+			var tempCsv = {};
+			request
+				.get(url)
+				.pipe(new StringStream())
+				.consume(object => (tempCsv += object))
+				.then(() => {
+					csv({
+						noheader: true,
+						output: "csv"
+					})
+						.fromString(tempCsv)
+						.then(csvObj => {
+							var boardArray = getKeyByValue(csvObj, device);
+
+							if (boardArray.length == 0) {
+								return sendErrorResponse(
+									msg,
+									`Sorry, we couldn't find any boards with device name ${device}!`
+								);
+							} else {
+								var i = 1;
+								const embed = new MessageEmbed()
+									.setTitle(
+										`Board(s) found with device name ${device}`
+									)
+									.setColor(7506394);
+
+								boardArray.forEach(board => {
+									if (i > 5) {
+										embed.setDescription(
+											"These results were limited to the first 5 found. Please use a more precise query."
+										);
+									} else {
+										embed.addField(
+											`${i}. ${board[0]}`,
+											`${board[10]}`,
+											true
+										);
+									}
+									i++;
+								});
+
+								return msg.channel.send({ embed });
+							}
+						});
+				});
 		}
 
 		function getKeyByValue(object, value) {
 			var returnArray = [];
-			for (const line in object) {
-				if (object[line].toLowerCase().includes(value.toLowerCase())) {
-					returnArray.push(line);
+			object.forEach(device => {
+				if (device[10].toLowerCase().includes(value.toLowerCase())) {
+					returnArray.push(device);
 				}
-			}
+			});
+
 			return returnArray;
 		}
 
