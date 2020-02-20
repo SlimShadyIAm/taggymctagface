@@ -57,7 +57,9 @@ module.exports = class Board2DeviceCommand extends Command {
 									const embed = new MessageEmbed()
 										.setColor(7506394)
 										.setDescription(
-											`Board **${board}** belongs to the following device(s): **${device[10]}**`
+											`Board **${board}** belongs to the following device(s):\n\n ** - ${device[10]
+												.split(",")
+												.join("\n - ")}**`
 										);
 									found = true;
 									return msg.channel.send({ embed });

@@ -60,28 +60,29 @@ module.exports = class Device2BoardCommand extends Command {
 									`Sorry, we couldn't find any boards with device name ${device}!`
 								);
 							} else {
-								var i = 1;
 								const embed = new MessageEmbed()
 									.setTitle(
 										`Board(s) found with device name ${device}`
 									)
 									.setColor(7506394);
 
+								var description = "";
+								if (boardArray.length > 5) {
+									description =
+										"These results were limited to the first 5 found. Please use a more precise query.";
+								}
+								var i = 1;
 								boardArray.forEach(board => {
-									if (i > 5) {
-										embed.setDescription(
-											"These results were limited to the first 5 found. Please use a more precise query."
-										);
-									} else {
-										embed.addField(
-											`${i}. ${board[0]}`,
-											`${board[10]}`,
-											true
-										);
+									if (i < 6) {
+										description += `\n\n**${i}. ${
+											board[0]
+										}** \n - ${board[10]
+											.split(",")
+											.join("\n - ")}`;
+										i++;
 									}
-									i++;
 								});
-
+								embed.setDescription(description);
 								return msg.channel.send({ embed });
 							}
 						});
