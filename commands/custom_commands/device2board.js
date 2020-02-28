@@ -76,9 +76,7 @@ module.exports = class Device2BoardCommand extends Command {
 									if (i < 6) {
 										description += `\n\n**${i}. ${
 											board[0]
-										}** \n - ${board[10]
-											.split(",")
-											.join("\n - ")}`;
+										}** \n${parse(board[10])}`;
 										i++;
 									}
 								});
@@ -87,6 +85,30 @@ module.exports = class Device2BoardCommand extends Command {
 							}
 						});
 				});
+		}
+
+		function parse(str) {
+			let result = "",
+				item = "",
+				depth = 0;
+
+			function push() {
+				if (item) result += ` - ${item}\n`;
+				item = "";
+			}
+
+			for (let i = 0, c; (c = str[i]), i < str.length; i++) {
+				if (!depth && c === ",") push();
+				else {
+					item += c;
+					if (c === "(") depth++;
+					if (c === ")") depth--;
+				}
+			}
+
+			push();
+			console.log(result);
+			return result;
 		}
 
 		function getKeyByValue(object, value) {
