@@ -107,7 +107,6 @@ module.exports = class Device2BoardCommand extends Command {
 			}
 
 			push();
-			console.log(result);
 			return result;
 		}
 

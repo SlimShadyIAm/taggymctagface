@@ -38,20 +38,20 @@ module.exports = class CrosServingCommand extends Command {
 				}
 				var preparedData = {
 					stable: {
-						version: ourBoard.Stable.split("<br>")[0],
-						platform: ourBoard.Stable.split("<br>")[1]
+						platform: ourBoard.Stable.split("<br>")[0],
+						version: ourBoard.Stable.split("<br>")[1]
 					},
 					beta: {
-						version: ourBoard.Beta.split("<br>")[0],
-						platform: ourBoard.Beta.split("<br>")[1]
+						platform: ourBoard.Beta.split("<br>")[0],
+						version: ourBoard.Beta.split("<br>")[1]
 					},
 					dev: {
-						version: ourBoard.Dev.split("<br>")[0],
-						platform: ourBoard.Dev.split("<br>")[1]
+						platform: ourBoard.Dev.split("<br>")[0],
+						version: ourBoard.Dev.split("<br>")[1]
 					},
 					canary: {
-						version: ourBoard.Canary.split("<br>")[0],
-						platform: ourBoard.Canary.split("<br>")[1]
+						platform: ourBoard.Canary.split("<br>")[0],
+						version: ourBoard.Canary.split("<br>")[1]
 					}
 				}
 				return msg.channel.send(pushUpdate(preparedData));		 
