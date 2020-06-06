@@ -69,7 +69,7 @@ module.exports = class CrosServingCommand extends Command {
 		}
 		function pushUpdate(boardData) {
 			return new MessageEmbed()
-				.setTitle(`Cros Serving Updates results for ${board}`)
+				.setTitle(`Chrome OS update status for ${board.toLowerCase()}`)
 				.addField("Stable Channel", `**Version**: ${boardData.stable.version}\n **Platform**: ${boardData.stable.platform}`, true)
 				.addField("Beta Channel", `**Version**: ${boardData.beta.version}\n **Platform**: ${boardData. beta.platform}`, true)
 				.addField("Dev Channel", `**Version**: ${boardData.dev.version}\n **Platform**: ${boardData.dev.platform}`, true)
