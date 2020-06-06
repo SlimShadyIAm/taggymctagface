@@ -17,14 +17,16 @@
   },
   "homepage": "https://github.com/SlimShadyIAm/taggymctagface#readme",
   "dependencies": {
+    "@discordjs/form-data": "^3.0.1",
     "abort-controller": "^3.0.0",
+    "axios": "^0.19.2",
     "better-sqlite3": "^5.4.0",
     "cheerio": "^1.0.0-rc.3",
     "csvtojson": "^2.0.8",
     "discord.js": "github:discordjs/discord.js",
     "discord.js-commando": "github:discordjs/Commando",
     "request": "^2.88.0",
-    "scramjet": "^4.23.2",
+    "scramjet": "^4.30.1",
     "timediff": "^1.1.1"
   }
 }
