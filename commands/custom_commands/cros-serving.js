@@ -32,7 +32,7 @@ module.exports = class CrosServingCommand extends Command {
 			.get(REQ_URL)
 			.then((data) => {
 				const deviceData = data.data;
-				const ourBoard = deviceData.filter(item => item.Codename == board)[0];
+				const ourBoard = deviceData.filter(item => item.Codename == board.toLowerCase())[0];
 				if (!ourBoard) {
 					return sendErrorResponse(msg,`Board ${board} does not exist! Please use a valid board name.`);
 				}
