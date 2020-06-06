@@ -27,6 +27,7 @@ module.exports = class CrosServingCommand extends Command {
 	}
 
 	run(msg, { board }) {
+		msg.channel.startTyping();
 		axios
 			.get(REQ_URL)
 			.then((data) => {
@@ -54,24 +55,29 @@ module.exports = class CrosServingCommand extends Command {
 					}
 				}
 				return msg.channel.send(pushUpdate(preparedData));		 
-			});
-			function sendErrorResponse(msg, text) {
-				msg.channel.send(new MessageEmbed()
-					.setColor(7506394)
-					.setTitle("An error occured!")
-					.setDescription(text));
-			}
-			function pushUpdate(boardData) {
-				return new MessageEmbed()
-					.setTitle(`Cros Serving Updates results for ${board}`)
-					.addField("Stable Channel", `**Version**: ${boardData.stable.version}\n **Platform**: ${boardData.stable.platform}`, true)
-					.addField("Beta Channel", `**Version**: ${boardData.beta.version}\n **Platform**: ${boardData. beta.platform}`, true)
-					.addField("Dev Channel", `**Version**: ${boardData.dev.version}\n **Platform**: ${boardData.dev.platform}`, true)
-					.addField("Canary Channel", `**Version**: ${boardData.canary.version}\n **Platform**: ${boardData.canary.platform}`, true)
-					.setColor(7506394)
-					.setFooter(
-						"Powered by https://cros.tech/ (by Skylar)"
-					);
-			}
+			}).catch(() => {
+				return sendErrorResponse(msg, "Some error occured! Maybe the feed is down. Contact SlimShadyIAm or Skylar.")
+			  })
+			  .finally(() => {
+				msg.channel.stopTyping();
+		});
+		function sendErrorResponse(msg, text) {
+			msg.channel.send(new MessageEmbed()
+				.setColor(7506394)
+				.setTitle("An error occured!")
+				.setDescription(text));
+		}
+		function pushUpdate(boardData) {
+			return new MessageEmbed()
+				.setTitle(`Cros Serving Updates results for ${board}`)
+				.addField("Stable Channel", `**Version**: ${boardData.stable.version}\n **Platform**: ${boardData.stable.platform}`, true)
+				.addField("Beta Channel", `**Version**: ${boardData.beta.version}\n **Platform**: ${boardData. beta.platform}`, true)
+				.addField("Dev Channel", `**Version**: ${boardData.dev.version}\n **Platform**: ${boardData.dev.platform}`, true)
+				.addField("Canary Channel", `**Version**: ${boardData.canary.version}\n **Platform**: ${boardData.canary.platform}`, true)
+				.setColor(7506394)
+				.setFooter(
+					"Powered by https://cros.tech/ (by Skylar)"
+				);
+		}
 	}
 };
