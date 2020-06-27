@@ -23,10 +23,10 @@ module.exports = class RulesCommand extends Command {
 	}
 
 	run(msg, { member }) {
-		let acceptedRole = msg.guild.roles.find(
+		let acceptedRole = msg.guild.roles.cache.find(
 			role => role.name === "accepted-rules"
 		);
-		let rulesRole = msg.guild.roles.find(role => role.name === "rules");
+		let rulesRole = msg.guild.roles.cache.find(role => role.name === "rules");
 
 		member.roles.remove(acceptedRole);
 		member.roles.add(rulesRole).then(() => {

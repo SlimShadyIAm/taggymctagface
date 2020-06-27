@@ -22,9 +22,7 @@ module.exports = class VerifyCommand extends Command {
 	}
 
 	run(msg, { member }) {
-		let birthdayRole = msg.guild.roles.find(
-			role => role.name === "birthday boi"
-		);
+		let birthdayRole = msg.guild.roles.cache.find(role => role.name === "birthday boi")
 
 		member.roles.add(birthdayRole).then(() => {
 			const embed = new MessageEmbed()

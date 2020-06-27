@@ -22,7 +22,7 @@ module.exports = class VerifyCommand extends Command {
 	}
 
 	run(msg, { member }) {
-		let acceptedRole = msg.guild.roles.find(
+		let acceptedRole = msg.guild.roles.cache.find(
 			role => role.name === "accepted-rules"
 		);
 

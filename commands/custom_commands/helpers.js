@@ -20,7 +20,7 @@ module.exports = class HelpersCommand extends Command {
 			return;
 		}
 
-		var helpersRole = msg.guild.roles.find(role => role.name === "Helpers");
+		var helpersRole = msg.guild.roles.cache.find(role => role.name === "Helpers");
 		var pingCooldown = pingUsers.find(user => user.id === msg.author.id);
 
 		if (pingCooldown) {
