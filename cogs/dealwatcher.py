@@ -49,9 +49,8 @@ class DealWatcher(commands.Cog):
         print("STOPPING...")
 
     # the watcher thread
-    @tasks.loop(seconds=10)
+    @tasks.loop(minues=5)
     async def watcher(self):
-        print("Starting watcher...")   
         pp = pprint.PrettyPrinter(indent=4)
         for feed in self.feeds:
             if feed['good_feed'] is True:
