@@ -62,8 +62,8 @@ class DealWatcher(commands.Cog):
     async def good_feed(self, feed):
         data = feedparser.parse(feed["feed"], modified=feed["prev_data"].modified)
         if (data.status != 304):
-            for post in data.entries:
-                print(f'NEW GOOD ENTRY: {post.title} {post.link}')
+            # for post in data.entries:
+                # print(f'NEW GOOD ENTRY: {post.title} {post.link}')
             self.check_new_entries(feed, data.entries)
         
         feed["prev_data"] = data
@@ -76,8 +76,8 @@ class DealWatcher(commands.Cog):
         
         new_posts = [post for post in data.entries if post.id in new_ids]
         if (len(new_posts) > 0):
-            for post in new_posts:
-                print(f'NEW BAD ENTRY: {post.title} {post.link}')
+            # for post in new_posts:
+            #     print(f'NEW BAD ENTRY: {post.title} {post.link}')
             self.check_new_entries(feed, new_posts)
         
         feed["prev_data"] = data
@@ -91,12 +91,12 @@ class DealWatcher(commands.Cog):
                 match = [tag for tag in feed["filters"] if tag in post_tags]
                 match_required = [tag for tag in feed["requiredFilters"] if tag in post_tags]
                 if (len(match) > 0 and len(match_required) > 0):
-                    print(f'MATCH FOUND {entry.title}, {entry.link}, {entry.tags}')
+                    print(f'MATCH FOUND DEAL {entry.title}, {entry.link}, {entry.tags}')
                     await self.push_update(entry, feed)
             else:
                 match = [tag for tag in feed["filters"] if tag in post_tags]
                 if (len(match) > 0):
-                    print(f'MATCH FOUND {entry.title}, {entry.link}, {entry.tags}')
+                    print(f'MATCH FOUND DEAL {entry.title}, {entry.link}, {entry.tags}')
                     await self.push_update(entry, feed)
 
 
@@ -107,7 +107,7 @@ class DealWatcher(commands.Cog):
     @watcher.before_loop
     async def before_watcher(self):
         await self.bot.wait_until_ready()
-        
+
 def setup(bot):
     dw = DealWatcher(bot)
     bot.add_cog(dw)
