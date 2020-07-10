@@ -2,8 +2,6 @@ from discord.ext import commands, tasks
 import feedparser
 import pprint
 import threading, time
-import asyncio
-from syncer import sync
 
 bott = None
 
