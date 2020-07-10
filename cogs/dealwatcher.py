@@ -1,4 +1,4 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
 import feedparser
 import pprint
 import threading, time
@@ -44,66 +44,58 @@ class DealWatcher(commands.Cog):
             }
         ]
 
-        # when we want to unload/reload, we use this to stop the watcher
-        # self.stop_event = threading.Event()
+        for feed in feeds:
+            thread = threading.Thread(target=watcher, args=(feed, bot,), daemon=True)
+            thread.start()
 
-        # start new thread for each feed to watch
-        
-        # thread = threading.Thread(target=watcher, args=(feed, self.stop_event, bot,), daemon=True)
-        # thread.start()
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(main(loop, feeds, bot))
-        
         # loop.run_forever()
     def cog_unload(self):
-        loop = asyncio.get_event_loop()
-        loop.close()
+        # loop = asyncio.get_event_loop()
+        # loop.close()
         print("STOPPING...")
 
-async def main(loop, feeds, bot):
-    aaa = []
-    for feed in feeds:
-        aaa.append(loop.create_task(watcher(feed, bot)))
-    await asyncio.wait(aaa)
 # the watcher thread
-async def watcher(feed, bot):
+@tasks
+def watcher(feed, bot):
     print("Starting watcher...")   
     pp = pprint.PrettyPrinter(indent=4)
 
     while True:
-        # for feed in feeds: 
-            # thread = threading.Thread(target=watcher, args=(feed, self.stop_event, bot,), daemon=True)
-            # thread.start()
-            
-            if feed['good_feed'] is True:
-                await good_feed(feed, bot)
-            else:
-                await bad_feed(feed, bot)
-            time.sleep(60)
+        if feed['good_feed'] is True:
+            good_feed(feed, bot)
+        else:
+            bad_feed(feed, bot)
+        time.sleep(60)
 
 # feed watcher for feeds with proper etag support
-async def good_feed(feed, bot):
+def good_feed(feed, bot):
     data = feedparser.parse(feed["feed"])
     data = feedparser.parse(feed["feed"], modified=feed["prev_data"].modified)
     if (data.status != 304):
         for post in data.entries:
-            await push_update(post, feed, bot)
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(push_update(post, feed, bot))
             print(f'NEW GOOD ENTRY: {post.title} {post.link}')
         check_new_entries(feed, data.entries)
     feed["prev_data"] = data
 
 # improper etag support
-async def bad_feed(feed, bot):
+def bad_feed(feed, bot):
     data = feedparser.parse(feed["feed"])
     for post in data.entries:
-        await push_update(post, feed, bot)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(push_update(post, feed, bot))
     prev_ids = [something["id"] for something in feed["prev_data"].entries]
     new_ids = [something["id"] for something in data.entries if something["id"] not in prev_ids]
     
     new_posts = [post for post in data.entries if post.id in new_ids]
     if (len(new_posts) > 0):
         for post in new_posts:
-            await push_update(post, feed, bot)
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(push_update(post, feed, bot))
             print(f'NEW BAD ENTRY: {post.title} {post.link}')
         check_new_entries(feed, new_posts)
 
@@ -125,8 +117,7 @@ def check_new_entries(feed, entries):
 
 async def push_update(post, feed, bot):
     channel = bot.get_guild(525250440212774912).get_channel(621704381053534257)
-    await channel.send(f'NEW ENTRY: {post.title} {post.link} {feed["name"]}')
-
+    await (channel.send(f'NEW ENTRY: {post.title} {post.link} {feed["name"]}'))
 def setup(bot):
     dw = DealWatcher(bot)
     bot.add_cog(dw)
