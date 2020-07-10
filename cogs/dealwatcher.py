@@ -60,12 +60,12 @@ class DealWatcher(commands.Cog):
 
     # feed watcher for feeds with proper etag support
     async def good_feed(self, feed):
-        data = feedparser.parse(feed["feed"])
         data = feedparser.parse(feed["feed"], modified=feed["prev_data"].modified)
         if (data.status != 304):
             for post in data.entries:
                 print(f'NEW GOOD ENTRY: {post.title} {post.link}')
             self.check_new_entries(feed, data.entries)
+        
         feed["prev_data"] = data
 
     # improper etag support
@@ -79,7 +79,8 @@ class DealWatcher(commands.Cog):
             for post in new_posts:
                 print(f'NEW BAD ENTRY: {post.title} {post.link}')
             self.check_new_entries(feed, new_posts)
-
+        
+        feed["prev_data"] = data
 
     async def check_new_entries(self, feed, entries):
         pp = pprint.PrettyPrinter(indent=4)
