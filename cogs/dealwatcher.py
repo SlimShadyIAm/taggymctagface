@@ -52,24 +52,19 @@ class DealWatcher(commands.Cog):
 
 def watcher(feed, stop_event):   
     pp = pprint.PrettyPrinter(indent=4)
-    # pp.pprint(entry)
-    # xd = [something["id"] for something in self.data.entries]
-    # for entry in new_data.entries:
-    #     pp.pprint(entry)
-    #     if entry.id not in xd:
-    #         print(entry)
 
     while not stop_event.is_set():   
         if feed['good_feed'] is True:
             good_feed(feed)
         else:
             bad_feed(feed)
+        time.sleep(60)
 
 def good_feed(feed):
     data = feedparser.parse(feed["feed"])
     data = feedparser.parse(feed["feed"], modified=feed["prev_data"].modified)
     if (data.status != 304):
-         for post in data.entries:
+        for post in data.entries:
             print(f'NEW GOOD ENTRY: {post.title} {post.link}')
         check_new_entries(feed, data.entries)
     feed["prev_data"] = data
@@ -95,13 +90,11 @@ def check_new_entries(feed, entries):
             match = [tag for tag in feed["filters"] if tag in post_tags]
             match_required = [tag for tag in feed["requiredFilters"] if tag in post_tags]
             if (len(match) > 0 and len(match_required) > 0):
-                print(entry.title)
+                print(f'MATCH FOUND {entry.title}, {entry.link}, {entry.tags}')
         else:
             match = [tag for tag in feed["filters"] if tag in post_tags]
             if (len(match) > 0):
-                print(entry.title)
-
-    # xd = [something["id"] for something in self.data.entries]
+                print(f'MATCH FOUND {entry.title}, {entry.link}, {entry.tags}')
 
 
 def setup(bot):
