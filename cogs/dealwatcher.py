@@ -49,7 +49,7 @@ class DealWatcher(commands.Cog):
         print("STOPPING...")
 
     # the watcher thread
-    @tasks.loop(minues=5)
+    @tasks.loop(minutes=5)
     async def watcher(self):
         pp = pprint.PrettyPrinter(indent=4)
         for feed in self.feeds:
@@ -103,7 +103,11 @@ class DealWatcher(commands.Cog):
     async def push_update(self, post, feed):
         channel = self.bot.get_guild(525250440212774912).get_channel(621704381053534257)
         await (channel.send(f'New deal was posted!\n{post.title}\n{post.link}'))
-      
+    
+    @watcher.before_loop
+    async def before_watcher(self):
+        await self.bot.wait_until_ready()
+        
 def setup(bot):
     dw = DealWatcher(bot)
     bot.add_cog(dw)
