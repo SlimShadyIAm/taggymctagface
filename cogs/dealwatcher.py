@@ -23,7 +23,7 @@ class DealWatcher(commands.Cog):
                 'profilePicture':
                     "https://lh4.googleusercontent.com/-2lq9WcxRgB0/AAAAAAAAAAI/AAAAAAAAAQk/u15SBRi49fE/s250-c-k/photo.jpg",
                 'filters': ["deal", "deals", "sale", "sales"],
-                'requiredFilters': ["chromebook", "chromebooks", "chromeos"],
+                'requiredFilters': ["chromebook", "chromebooks", "chromeos", "chrome os"],
                 'good_feed': True,
                 'prev_data': feedparser.parse('https://www.androidpolice.com/feed/')
 
@@ -34,7 +34,7 @@ class DealWatcher(commands.Cog):
                 'profilePicture':
                     "https://images-na.ssl-images-amazon.com/images/I/51L8Vd5bndL._SY355_.png",
                 'filters': ["deal", "deals", "sale", "sales"],
-                'requiredFilters': ["chromebook", "chromebooks", "chromeos"],
+                'requiredFilters': ["chromebook", "chromebooks", "chromeos", "chrome os" "google chrome os"],
                 'good_feed': True,
                 'prev_data': feedparser.parse('https://www.androidauthority.com/feed/')
             }
