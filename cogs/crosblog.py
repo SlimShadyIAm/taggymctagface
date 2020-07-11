@@ -1,6 +1,7 @@
 import discord
 from discord import Embed, Color
-from discord.ext import commands, tasks
+from discord.ext import commands
+import asyncio
 import feedparser
 import pprint
 
@@ -11,20 +12,25 @@ class CrosBlog(commands.Cog):
         self.url = "http://feeds.feedburner.com/GoogleChromeReleases"
         self.prev_data = feedparser.parse(self.url)
 
-        self.watcher.start()
+        self.loop = asyncio.get_event_loop().create_task(self.watcher())
 
     def cog_unload(self):
-        self.watcher.cancel()
+        self.loop.cancel()
         print("STOPPING...")
 
     
     # the watcher thread
-    @tasks.loop(seconds=10)
     async def watcher(self):
-        data = feedparser.parse(self.url, etag=self.prev_data.etag, modified=self.prev_data.modified)
-        if (data.status == 304):
-            await self.check_new_entries(data.entries)
-        self.prev_data = data
+        await self.bot.wait_until_ready()
+        while True:
+            kwargs = dict(modified=self.prev_data.modified if hasattr(self.prev_data, 'modified') else None, etag=self.prev_data.etag if hasattr(self.prev_data, 'modified')  else None)
+            data = feedparser.parse(self.url, **{k: v for k, v in kwargs.items() if v is not None})
+
+            if (data.status == 304):
+                await self.check_new_entries(data.entries)
+            self.prev_data = data
+            await asyncio.sleep(10)
+            
 
     async def check_new_entries(self, posts):
         for post in posts:
@@ -47,10 +53,6 @@ class CrosBlog(commands.Cog):
         else:
             channel = self.bot.get_guild(525250440212774912).get_channel(621704381053534257)
             await (channel.send(f'New blog was posted for {category} channel!\n{post.title}\n{post.link}'))
-
-    @watcher.before_loop
-    async def before_watcher(self):
-        await self.bot.wait_until_ready()
         
 def setup(bot):
     bot.add_cog(CrosBlog(bot))
