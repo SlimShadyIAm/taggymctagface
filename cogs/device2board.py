@@ -10,7 +10,7 @@ class DeviceToBoard(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command(name='device2Board', aliases=['d2b'])
+    @commands.command(name='device2board', aliases=['d2b'])
     async def device2board(self, ctx, *search_term: str):
         """A simple command which repeats our input.
         In rewrite Context is automatically passed to our commands as the first argument after self."""
