@@ -1,9 +1,13 @@
-from discord import Embed, Color
-from discord.ext import commands
-import sqlite3
-import random
-from os.path import dirname, abspath
 import os
+import random
+import re
+import sqlite3
+from os.path import abspath, dirname
+
+from discord import Color, Embed
+from discord.ext import commands
+
+
 class Add(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -11,7 +15,8 @@ class Add(commands.Cog):
     @commands.command(name='add')
     @commands.has_permissions(manage_messages=True)
     async def add(self, ctx, command_name:str, args:str, *rest):
-        if (not command_name.isalpha()):
+        pattern = re.compile("^[a-zA-Z0-9_-]*$")
+        if (not pattern.match(command_name)):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="The command name should only be alphabetical characters!"))
             return
         
