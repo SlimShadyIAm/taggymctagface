@@ -39,8 +39,10 @@ class CrosUpdates(commands.Cog):
                 version = data_board["Dev"].split("<br>")
                 embed.add_field(name=f'Dev Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
                 
-                version = data_board["Canary"].split("<br>")
-                embed.add_field(name=f'Canary Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
+                if (data_board["Canary"] is not None):
+                    version = data_board["Canary"].split("<br>")
+                    if len(version) == 2:
+                        embed.add_field(name=f'Canary Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
                 
                 embed.set_footer(text="Powered by https://cros.tech/ (by Skylar)")
                 await ctx.send(embed=embed)
