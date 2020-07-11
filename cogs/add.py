@@ -26,18 +26,20 @@ class Add(commands.Cog):
             return
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
-        conn = sqlite3.connect(db_path)
-        c = conn.cursor()
-        c.execute("SELECT * FROM commands WHERE command_name = ? AND args = ?;", (command_name, args,))
-        
-        res = c.fetchall()
-        if len(res) > 0:
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="That command already exists!"))
-            return
-        this_id = gen_id()
-        c.execute("INSERT OR REPLACE INTO commands (command_id, server_id, user_who_added, command_name, no_of_uses, response, args) VALUES (?, ?, ?, ?, ?, ?, ?)", (this_id, ctx.guild.id, ctx.author.id, command_name, 0, rest, args ))
-        conn.commit()
-        conn.close()
+        try:
+            conn = sqlite3.connect(db_path)
+            c = conn.cursor()
+            c.execute("SELECT * FROM commands WHERE command_name = ? AND args = ?;", (command_name, args,))
+            
+            res = c.fetchall()
+            if len(res) > 0:
+                await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="That command already exists!"))
+                return
+            this_id = gen_id()
+            c.execute("INSERT OR REPLACE INTO commands (command_id, server_id, user_who_added, command_name, no_of_uses, response, args) VALUES (?, ?, ?, ?, ?, ?, ?)", (this_id, ctx.guild.id, ctx.author.id, command_name, 0, rest, args ))
+            conn.commit()
+        finally:
+            conn.close()
         
         embed = embed=Embed(title=f"Added command!", color=Color(value=0x37b83b))
         embed.add_field(name=f'Command name', value=command_name)
