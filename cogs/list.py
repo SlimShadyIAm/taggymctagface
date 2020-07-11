@@ -25,13 +25,16 @@ class Add(commands.Cog):
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
         conn = sqlite3.connect(db_path)
         c = conn.cursor()
-        c.execute("SELECT * FROM commands WHERE server_id = ? ORDER BY command_name", (ctx.guild.id,))
+        c.execute("SELECT * FROM commands WHERE server_id = ? ORDER BY command_name", (253908290105376768,))
 
         data = c.fetchall()
         conn.close()
-
-        pages = menus.MenuPages(source=Source(data, key=lambda t: 1, per_page=6), clear_reactions_after=True)
-        await pages.start(ctx)
+        if (len(data) == 0) {
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="No commands in this guild!"))
+        } else {
+            pages = menus.MenuPages(source=Source(data, key=lambda t: t[0], per_page=6), clear_reactions_after=True)
+            await pages.start(ctx)
+        }
 
 def setup(bot):
     bot.add_cog(Add(bot))
