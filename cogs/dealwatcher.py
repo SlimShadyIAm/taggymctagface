@@ -1,7 +1,9 @@
-from discord.ext import commands, tasks
-import feedparser
 import pprint
-import threading, time
+import threading
+import time
+
+import feedparser
+from discord.ext import commands, tasks
 
 bott = None
 
@@ -64,7 +66,7 @@ class DealWatcher(commands.Cog):
         if (data.status != 304):
             # for post in data.entries:
                 # print(f'NEW GOOD ENTRY: {post.title} {post.link}')
-            self.check_new_entries(feed, data.entries)
+            await self.check_new_entries(feed, data.entries)
         
         feed["prev_data"] = data
 
@@ -111,4 +113,3 @@ class DealWatcher(commands.Cog):
 def setup(bot):
     dw = DealWatcher(bot)
     bot.add_cog(dw)
-
