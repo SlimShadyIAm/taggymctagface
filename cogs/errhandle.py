@@ -1,8 +1,14 @@
-import discord
-import traceback
-import sys
-from discord.ext import commands
+import os
+import re
 import sqlite3
+import sys
+import traceback
+from os.path import abspath, dirname
+
+import discord
+from discord import Color, Embed
+from discord.ext import commands
+
 
 class CommandErrorHandler(commands.Cog):
 
@@ -11,8 +17,6 @@ class CommandErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        print(ctx.invoked_with)
-
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, 'on_error'):
             return
@@ -24,13 +28,31 @@ class CommandErrorHandler(commands.Cog):
                 return
         error = getattr(error, 'original', error)
         if isinstance(error, commands.CommandNotFound):
-            # print(ctx.message.content)
-            # print(ctx.command)
+            command_name = ctx.invoked_with
+            args = " ".join(ctx.message.content.split(" ",)[1:])
+            args_flag = "true" if args != "" else "false"
 
-            conn = sqlite3.connect('commands.sqlite')
-            c = conn.cursor()
-            # t = ('RHAT',)
-            # c.execute('SELECT * FROM stocks WHERE symbol=?', t)
+            BASE_DIR = dirname(dirname(abspath(__file__)))
+            db_path = os.path.join(BASE_DIR, "commands.sqlite")
+            try:
+                conn = sqlite3.connect(db_path)
+                c = conn.cursor()
+                c.execute("SELECT * FROM commands WHERE command_name = ? AND args = ? AND server_id = ?", (command_name, args_flag, ctx.guild.id,))
+
+                data = c.fetchall()
+                if (len(data) != 0):
+                    c.execute("UPDATE commands SET no_of_uses = ? WHERE command_name = ? AND args = ? AND server_id = ?", (data[0][4]+1, command_name, args_flag, ctx.guild.id,))
+                    conn.commit()
+                    response = data[0][5]
+                    pattern = re.compile(r"((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z]){2,6}([a-zA-Z0-9\.\&\/\?\:@\-_=#])*")
+                    if (pattern.match(response)):
+                        response = response + "%20".join(args.split(" "))
+                    else:
+                        response = response + args
+                    await ctx.send(response)
+            finally:
+                conn.close()
+            
         elif isinstance(error, commands.DisabledCommand):
             await ctx.send(f'{ctx.command} has been disabled.')
 
@@ -43,7 +65,9 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
-
+            # super
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(error)
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)

@@ -21,6 +21,9 @@ class Add(commands.Cog):
         
         rest = format(' '.join(rest))
         
+        if (rest == ""):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to include a response!"))
+            return
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
         conn = sqlite3.connect(db_path)
@@ -40,8 +43,8 @@ class Add(commands.Cog):
         embed.add_field(name=f'Command name', value=command_name)
         embed.add_field(name=f'Args supported?', value=args)
         embed.add_field(name=f'ID', value=this_id)
-        embed.add_field(name=f'Response', value=rest)
-
+        if rest != "":
+            embed.add_field(name=f'Response', value=rest)
         await ctx.send(embed=embed)
 
 def setup(bot):

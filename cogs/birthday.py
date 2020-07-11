@@ -11,7 +11,7 @@ class Birthday(commands.Cog):
     
     @commands.command(name='birthday')
     @commands.has_role("Admin")
-    async def birthday(self, ctx, member: discord.Member = None):
+    async def birthday(self, ctx, member: discord.Member):
         """A simple command which repeats our input.
         In rewrite Context is automatically passed to our commands as the first argument after self."""
 
