@@ -25,7 +25,6 @@ class CrosUpdates(commands.Cog):
             
             for data_board in data:
                 if data_board['Codename'] == board:
-                    # pp.pprint(data_board)
                     embed = Embed(title=f"ChromeOS update status for {board}", color=Color(value=0x37b83b))
                     version = data_board["Stable"].split("<br>")
                     embed.add_field(name=f'Stable Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')

@@ -3,8 +3,6 @@ from discord import Embed, Color
 from discord.ext import commands
 import asyncio
 import feedparser
-import pprint
-
 
 class CrosBlog(commands.Cog):
     def __init__(self, bot):

@@ -10,6 +10,7 @@ pylint = "*"
 "discord.py" = "*"
 feedparser = "*"
 discord-ext-menus = {git = "https://github.com/Rapptz/discord-ext-menus"}
+aiohttp = "*"
 
 [requires]
 python_version = "3.8"
