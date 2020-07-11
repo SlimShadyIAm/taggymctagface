@@ -29,12 +29,11 @@ class Add(commands.Cog):
 
         data = c.fetchall()
         conn.close()
-        if (len(data) == 0) {
+        if (len(data) == 0):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="No commands in this guild!"))
-        } else {
+        else:
             pages = menus.MenuPages(source=Source(data, key=lambda t: t[0], per_page=6), clear_reactions_after=True)
             await pages.start(ctx)
-        }
 
 def setup(bot):
     bot.add_cog(Add(bot))
