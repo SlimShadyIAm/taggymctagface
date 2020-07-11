@@ -51,6 +51,7 @@ class Add(commands.Cog):
         embed.add_field(name=f'Args supported?', value=args)
         embed.add_field(name=f'ID', value=this_id)
         if rest != "":
+            rest = rest[:100] + "..." if len(rest) > 100 else rest
             embed.add_field(name=f'Response', value=rest)
         await ctx.send(embed=embed)
 
