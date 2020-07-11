@@ -8,7 +8,7 @@ import pprint
 class CrosBlog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.url = "http://googlechromereleases.blogspot.com/atom.xml"
+        self.url = "http://feeds.feedburner.com/GoogleChromeReleases"
         self.prev_data = feedparser.parse(self.url)
 
         self.watcher.start()
@@ -21,17 +21,9 @@ class CrosBlog(commands.Cog):
     # the watcher thread
     @tasks.loop(seconds=10)
     async def watcher(self):
-        data = feedparser.parse(self.url)
-        
-        prev_ids = [something["id"] for something in self.prev_data.entries]
-        new_ids = [something["id"] for something in data.entries if something["id"] not in prev_ids]
-        
-        new_posts = [post for post in data.entries if post.id in new_ids]
-        if (len(new_posts) > 0):
-            for post in new_posts:
-                print(f'NEW BLOG ENTRY: {post.title} {post.link}')
-            await self.check_new_entries(new_posts)
-        
+        data = feedparser.parse(self.url, etag=self.prev_data.etag, modified=self.prev_data.modified)
+        if (data.status == 304):
+            await self.check_new_entries(data.entries)
         self.prev_data = data
 
     async def check_new_entries(self, posts):
