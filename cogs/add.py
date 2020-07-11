@@ -34,7 +34,7 @@ class Add(commands.Cog):
         try:
             conn = sqlite3.connect(db_path)
             c = conn.cursor()
-            c.execute("SELECT * FROM commands WHERE command_name = ? AND args = ?;", (command_name, args,))
+            c.execute("SELECT * FROM commands WHERE command_name = ? AND args = ? AND server_id = ?;", (command_name, args, ctx.guild.id,))
             
             res = c.fetchall()
             if len(res) > 0:
