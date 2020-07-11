@@ -30,7 +30,7 @@ class Add(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command(name='list')
+    @commands.command(name='list', aliases=["ls"])
     async def list(self, ctx):
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
