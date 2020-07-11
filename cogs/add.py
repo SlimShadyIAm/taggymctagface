@@ -4,7 +4,7 @@ import sqlite3
 import random
 from os.path import dirname, abspath
 import os
-class Admin(commands.Cog):
+class Add(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
@@ -45,7 +45,7 @@ class Admin(commands.Cog):
         await ctx.send(embed=embed)
 
 def setup(bot):
-    bot.add_cog(Admin(bot))
+    bot.add_cog(Add(bot))
 
 def gen_id():
     return random.randint(0, 10000000)
