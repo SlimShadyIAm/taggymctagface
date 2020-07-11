@@ -10,7 +10,7 @@ import os
 class Source(menus.GroupByPageSource):
     async def format_page(self, menu, entry):
         embed = Embed(title=f'Commands: Page {menu.current_page +1}/{self.get_max_pages()}')
-        for i, v in enumerate(entry.items, start=1):
+        for v in entry.items:
             res = f'\n**Response**:{v[5]}' if v[6] == 'true' else ''
             embed.add_field(name=f'${v[3]}', value=f'**ID**:{v[0]}\n**Supports arguments**:{v[6]}{res}\n**Creator**:<@{v[2]}>\n**Number of uses**:{v[4]}')
         return embed
