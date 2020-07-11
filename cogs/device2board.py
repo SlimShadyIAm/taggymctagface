@@ -15,8 +15,12 @@ class DeviceToBoard(commands.Cog):
         """A simple command which repeats our input.
         In rewrite Context is automatically passed to our commands as the first argument after self."""
         search_term = " ".join(search_term)
+        if (search_term == ''):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a board name! Example: `$d2b acer chromebook`"))
+            return
+
         pattern = re.compile("^[a-zA-Z0-9_()&,/ -]*$")
-        
+
         if (not pattern.match(search_term)):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="Illegal characters in search term!"))
             return
