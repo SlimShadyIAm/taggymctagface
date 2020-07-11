@@ -12,8 +12,7 @@ class Helpers(commands.Cog):
         self.bot = bot
     
     @commands.command(name='helpers')
-    @commands.has_role("Admin")
-    async def birthday(self, ctx):
+    async def helpers(self, ctx):
         """A simple command which repeats our input.
         In rewrite Context is automatically passed to our commands as the first argument after self."""
         print()
