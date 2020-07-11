@@ -6,7 +6,7 @@ import sqlite3
 async def on_message(self, message):
     print('Message from {0.author}: {0.content}'.format(message))
 
-initial_extensions = ['cogs.crosupdates', 'cogs.admin', 'cogs.crosblog', 'cogs.dealwatcher', 'cogs.errhandle', 'cogs.add', 'cogs.list', 'cogs.board2device']
+initial_extensions = ['cogs.crosupdates', 'cogs.admin', 'cogs.crosblog', 'cogs.dealwatcher', 'cogs.errhandle', 'cogs.add', 'cogs.list', 'cogs.board2device', 'cogs.device2board']
 
 bot = commands.Bot(command_prefix="$", description='A Rewrite Cog Example')
 

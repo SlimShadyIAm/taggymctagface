@@ -2,27 +2,26 @@ import discord
 from discord import Embed, Color
 from discord.ext import commands
 import aiohttp, asyncio, json
+import re
 
-class Board2Device(commands.Cog):
-    """Board2Device"""
+class DeviceToBoard(commands.Cog):
+    """Device2Board"""
     
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command(name='board2device', aliases=['b2d'])
-    async def board2device(self, ctx, board: str=""):
+    @commands.command(name='device2Board', aliases=['d2b'])
+    async def device2board(self, ctx, *search_term: str):
         """A simple command which repeats our input.
         In rewrite Context is automatically passed to our commands as the first argument after self."""
-
-        if (board == ''):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a board name! Example: `$b2d coral`"))
+        search_term = " ".join(search_term)
+        pattern = re.compile("^[a-zA-Z0-9_()&,/ -]*$")
+        
+        if (not pattern.match(search_term)):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="Illegal characters in search term!"))
             return
 
-        if (not board.isalpha()):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="The board should only be alphabetical characters!"))
-            return
-
-        board = board.lower()
+        search_term = search_term.lower()
 
         response = ""
         async with aiohttp.ClientSession() as session:
@@ -30,17 +29,15 @@ class Board2Device(commands.Cog):
             if response is None:
                 return
 
-        response = json.loads(response)
-        for device in response:
-            if device["Codename"] == board:
-                await ctx.send(embed=Embed(title="Board to device results", color=Color(value=0x37b83b), description=f'Board {board} belongs to device {device["Brand names"]}'))
-                return
-        
+        devices = json.loads(response)
+
+        search_results = [ (device["Codename"], device["Brand names"]) for device in devices if 'Brand names' in device and search_term in device['Brand names'].lower() ]
+                
         await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="A board with that name was not found!"))
 
 
 def setup(bot):
-    bot.add_cog(Board2Device(bot))
+    bot.add_cog(DeviceToBoard(bot))
 
 async def fetch(session, url, ctx):
     try:
