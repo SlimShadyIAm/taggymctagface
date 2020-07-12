@@ -38,6 +38,8 @@ class CustomCommands(commands.Cog):
     async def add_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a numeric command ID to delete!\nExample usage: `$delete 12345`"))
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You don't have permission to do this command!"))
 

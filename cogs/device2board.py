@@ -1,8 +1,13 @@
-import discord
-from discord import Embed, Color
-from discord.ext import commands, menus
-import aiohttp, asyncio, json
+import asyncio
+import json
 import re
+import traceback, sys
+
+import aiohttp
+import discord
+from discord import Color, Embed
+from discord.ext import commands, menus
+
 
 class Utilities(commands.Cog):
     """Device2Board"""
@@ -11,12 +16,13 @@ class Utilities(commands.Cog):
         self.bot = bot
     
     @commands.command(name='device2board', aliases=['d2b'])
-    async def device2board(self, ctx, *search_term: str):
+    async def device2board(self, ctx, *search_term: [str]):
         """(alias $d2b) Retrieve the board name from a specified brand name as a search term\nExample usage: `$d2b acer chromebook 11`"""
-        search_term = " ".join(search_term)
-        if (search_term == ''):
-            raise commands.MissingRequiredArgument("You need to supply a board name! Example: `$d2b acer chromebook`")
 
+        search_term = " ".join(search_term)
+        if search_term == "":
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a boardname! Example: `$d2b acer chromebook`"))
+            return
         pattern = re.compile("^[a-zA-Z0-9_()&,/ -]*$")
 
         if (not pattern.match(search_term)):
@@ -45,7 +51,9 @@ class Utilities(commands.Cog):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
         elif isinstance(error, commands.BadArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
-
+        else:
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
 class Source(menus.GroupByPageSource):
     async def format_page(self, menu, entry):
         embed = Embed(title=f'Search results: Page {menu.current_page +1}/{self.get_max_pages()}')
