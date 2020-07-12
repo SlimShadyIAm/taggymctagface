@@ -1,7 +1,10 @@
+import asyncio
+import os
 import threading
 import time
-import asyncio
+
 import feedparser
+import discord
 from discord.ext import commands, tasks
 
 bott = None
@@ -52,7 +55,6 @@ class DealWatcher(commands.Cog):
     # the watcher thread
     async def watcher(self, feed):
         await self.bot.wait_until_ready()
-    
         while True:
             if feed['good_feed'] is True:
                 await self.good_feed(feed)
@@ -100,7 +102,9 @@ class DealWatcher(commands.Cog):
 
 
     async def push_update(self, post, feed):
-        channel = self.bot.get_guild(525250440212774912).get_channel(621704381053534257)
+        guild_id = 525250440212774912 if os.environ.get('PRODUCTION') == "false" else 253908290105376768
+        guild_channels = self.bot.get_guild(guild_id).channels
+        channel = discord.utils.get(guild_channels, name="deals-and-updates")
         await (channel.send(f'New deal was posted!\n{post.title}\n{post.link}'))
     
 def setup(bot):

@@ -45,11 +45,12 @@ class CrosBlog(commands.Cog):
         pass
 
     async def push_update(self, post, category=None):
+        guild_id = 525250440212774912 if os.environ.get('PRODUCTION') == "false" else 253908290105376768
+        guild_channels = self.bot.get_guild(guild_id).channels
+        channel = discord.utils.get(guild_channels, name="deals-and-updates")
         if (category is None):
-            channel = self.bot.get_guild(525250440212774912).get_channel(621704381053534257)
             await (channel.send(f'New blog was posted!\n{post.title}\n{post.link}'))
         else:
-            channel = self.bot.get_guild(525250440212774912).get_channel(621704381053534257)
             await (channel.send(f'New blog was posted for {category} channel!\n{post.title}\n{post.link}'))
         
 def setup(bot):
