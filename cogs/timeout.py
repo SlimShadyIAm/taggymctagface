@@ -21,7 +21,7 @@ class Utilities(commands.Cog):
         await member.add_roles(role)
         await ctx.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Gave <@{member.id}> the timeout role. We\'ll let them know and remove it in 15 minutes.'))
         await member.send(embed=Embed(title="You have been put on timeout.", color=Color(value=0xebde34), description=f'{ctx.author.name} gave you the timeout role. We\'ll remove it in 15 minutes.'))
-        await asyncio.sleep(10)
+        await asyncio.sleep(900)
         await member.remove_roles(role)
         await ctx.author.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Removed {member.name}\'s timeout role.'))
         await member.send(embed=Embed(title="Timeout finished.", color=Color(value=0x37b83b), description='Removed your timeout role. Please behave, or we will have to take further action.'))
