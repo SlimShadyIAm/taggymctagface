@@ -28,7 +28,7 @@ class CommandErrorHandler(commands.Cog):
                 return
         error = getattr(error, 'original', error)
         if isinstance(error, commands.CommandNotFound):
-            command_name = ctx.invoked_with
+            command_name = ctx.invoked_with.lower()
             args = " ".join(ctx.message.content.split(" ",)[1:])
             args_flag = "true" if args != "" else "false"
 
