@@ -33,7 +33,7 @@ class Utilities(commands.Cog):
         response = json.loads(response)
         for device in response:
             if device["Codename"] == board:
-                await ctx.send(embed=Embed(title="Board to device results", color=Color(value=0x37b83b), description=f'Board {board} belongs to device {device["Brand names"]}'))
+                await ctx.send(embed=Embed(title=f'{device["Codename"]} belongs to...', color=Color(value=0x37b83b), description=device["Brand names"]))
                 return
         
         await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="A board with that name was not found!"))
