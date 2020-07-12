@@ -1,7 +1,6 @@
 import asyncio
 import json
 import re
-import traceback, sys
 
 import aiohttp
 import discord
@@ -50,9 +49,6 @@ class Utilities(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
         elif isinstance(error, commands.BadArgument):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
-        else:
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
 class Source(menus.GroupByPageSource):
     async def format_page(self, menu, entry):
