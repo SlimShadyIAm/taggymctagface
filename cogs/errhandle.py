@@ -72,7 +72,7 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=error))
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=error + "\n\n You should never receive an error like this. Contact SlimShadyIAm#9999."))
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}').set_footer(text="You should never receive an error like this. Contact SlimShadyIAm#9999."))
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 def setup(bot):
