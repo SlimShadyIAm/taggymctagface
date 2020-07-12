@@ -12,13 +12,9 @@ class CustomCommands(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def delete(self, ctx, id):
         """Delete a custom command\nExample usage: `$delete 12345`"""
-        if id == None:
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a command ID to delete!"))
-            return
-
+        
         if not id.isnumeric():
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a command ID to delete!"))
-            return
+            raise commands.BadArgument("You need to supply a numeric command ID to delete!\nExample usage: `$delete 12345`")
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
@@ -37,6 +33,14 @@ class CustomCommands(commands.Cog):
             conn.close()
         
         await ctx.send(embed=Embed(title=f"Deleted command!", color=Color(value=0x37b83b), description=f'Command with ID {id} is deleted'))
+
+    @delete.error
+    async def add_error(self, ctx, error):
+        if isinstance(error, commands.BadArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+        elif isinstance(error, commands.MissingPermissions):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You don't have permission to do this command!"))
+
 
 def setup(bot):
     bot.add_cog(CustomCommands(bot))

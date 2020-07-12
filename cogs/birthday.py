@@ -8,13 +8,12 @@ class Utilities(commands.Cog):
         self.bot = bot
     
     @commands.command(name='birthday')
-    @commands.has_role("Admin")
-    async def birthday(self, ctx, member: discord.Member):
+    @commands.has_permissions(administrator=True)
+    async def birthday(self, ctx, member: discord.Member=None):
         """Give a user the birthday role for 24 hours\nExample usage: `$birthday @SlimShadyIAm#9999`"""
 
         if member is None:
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="Please supply a member, i.e `$birthday @SlimShadyIAm#9999`"))
-            return
+            raise commands.BadArgument("Please supply a member, i.e `$birthday @SlimShadyIAm#9999`")
 
         await member.add_roles(discord.utils.get(ctx.guild.roles, name="birthday boi"))
         await ctx.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Gave <@{member.id}> the birthday role. We\'ll let them know and remove it in 24 hours.'))
@@ -23,5 +22,14 @@ class Utilities(commands.Cog):
         await member.remove_roles(discord.utils.get(ctx.guild.roles, name="birthday boi"))
         await ctx.author.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Removed {member.name}\'s birthday role.'))
         await member.send(embed=Embed(title="Party's over.", color=Color(value=0x37b83b), description='Removed your birthday role.'))
+    
+    @birthday.error
+    async def add_error(self, ctx, error):
+        if isinstance(error, commands.BadArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+        elif isinstance(error, commands.MissingPermissions):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You don't have permission to do this command!"))
+
+
 def setup(bot):
     bot.add_cog(Utilities(bot))

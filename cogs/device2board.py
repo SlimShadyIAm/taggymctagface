@@ -15,14 +15,12 @@ class Utilities(commands.Cog):
         """(alias $d2b) Retrieve the board name from a specified brand name as a search term\nExample usage: `$d2b acer chromebook 11`"""
         search_term = " ".join(search_term)
         if (search_term == ''):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a board name! Example: `$d2b acer chromebook`"))
-            return
+            raise commands.MissingRequiredArgument("You need to supply a board name! Example: `$d2b acer chromebook`")
 
         pattern = re.compile("^[a-zA-Z0-9_()&,/ -]*$")
 
         if (not pattern.match(search_term)):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="Illegal characters in search term!"))
-            return
+            raise commands.BadArgument("Illegal characters in search term!")
 
         search_term = search_term.lower()
 
@@ -40,6 +38,13 @@ class Utilities(commands.Cog):
         else:
             pages = NewMenuPages(source=Source(search_results, key=lambda t: 1, per_page=8), clear_reactions_after=True)
             await pages.start(ctx)
+    
+    @device2board.error
+    async def add_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
 
 class Source(menus.GroupByPageSource):
     async def format_page(self, menu, entry):
@@ -59,7 +64,6 @@ class NewMenuPages(menus.MenuPages):
             elif payload.event_type == 'REACTION_REMOVE':
                 return
         await super().update(payload)
-        
 
 def setup(bot):
     bot.add_cog(Utilities(bot))
