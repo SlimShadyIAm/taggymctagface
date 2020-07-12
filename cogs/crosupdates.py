@@ -3,7 +3,7 @@ from discord import Embed, Color
 from discord.ext import commands
 import aiohttp, asyncio, json
 
-class CrosUpdates(commands.Cog):
+class Utilities(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -52,7 +52,7 @@ class CrosUpdates(commands.Cog):
         return
 
 def setup(bot):
-    bot.add_cog(CrosUpdates(bot))
+    bot.add_cog(Utilities(bot))
 
 async def fetch(session, url, ctx):
     try:

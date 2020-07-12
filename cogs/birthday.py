@@ -3,7 +3,7 @@ from discord import Embed, Color
 from discord.ext import commands
 import asyncio
 
-class Birthday(commands.Cog):
+class Utilities(commands.Cog):
     """Birthday"""
     
     def __init__(self, bot):
@@ -27,4 +27,4 @@ class Birthday(commands.Cog):
         await ctx.author.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Removed {member.name}\'s birthday role.'))
         await member.send(embed=Embed(title="Party's over.", color=Color(value=0x37b83b), description='Removed your birthday role.'))
 def setup(bot):
-    bot.add_cog(Birthday(bot))
+    bot.add_cog(Utilities(bot))

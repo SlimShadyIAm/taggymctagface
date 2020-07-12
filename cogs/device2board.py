@@ -4,7 +4,7 @@ from discord.ext import commands, menus
 import aiohttp, asyncio, json
 import re
 
-class DeviceToBoard(commands.Cog):
+class Utilities(commands.Cog):
     """Device2Board"""
     
     def __init__(self, bot):
@@ -63,7 +63,7 @@ class NewMenuPages(menus.MenuPages):
         
 
 def setup(bot):
-    bot.add_cog(DeviceToBoard(bot))
+    bot.add_cog(Utilities(bot))
 
 async def fetch(session, url, ctx):
     try:

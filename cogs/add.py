@@ -8,7 +8,7 @@ from discord import Color, Embed
 from discord.ext import commands
 
 
-class Add(commands.Cog):
+class CustomCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
@@ -56,7 +56,7 @@ class Add(commands.Cog):
         await ctx.send(embed=embed)
 
 def setup(bot):
-    bot.add_cog(Add(bot))
+    bot.add_cog(CustomCommands(bot))
 
 def gen_id():
     return random.randint(0, 10000000)

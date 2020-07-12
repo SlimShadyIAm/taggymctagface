@@ -5,7 +5,7 @@ import asyncio
 
 pingUsers = []
 
-class Helpers(commands.Cog):
+class Utilities(commands.Cog):
     """Helpers"""
     
     def __init__(self, bot):
@@ -29,4 +29,4 @@ class Helpers(commands.Cog):
         pingUsers.remove(ctx.author)
 
 def setup(bot):
-    bot.add_cog(Helpers(bot))
+    bot.add_cog(Utilities(bot))

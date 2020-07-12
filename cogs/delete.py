@@ -4,7 +4,7 @@ import sqlite3
 import random
 from os.path import dirname, abspath
 import os
-class Delete(commands.Cog):
+class CustomCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
@@ -38,5 +38,5 @@ class Delete(commands.Cog):
         await ctx.send(embed=Embed(title=f"Deleted command!", color=Color(value=0x37b83b), description=f'Command with ID {id} is deleted'))
 
 def setup(bot):
-    bot.add_cog(Delete(bot))
+    bot.add_cog(CustomCommands(bot))
 

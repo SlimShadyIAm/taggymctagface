@@ -27,7 +27,7 @@ class NewMenuPages(menus.MenuPages):
                 return
         await super().update(payload)
         
-class Add(commands.Cog):
+class CustomCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
@@ -50,4 +50,4 @@ class Add(commands.Cog):
         finally:
             conn.close()
 def setup(bot):
-    bot.add_cog(Add(bot))
+    bot.add_cog(CustomCommands(bot))

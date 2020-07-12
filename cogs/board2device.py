@@ -3,7 +3,7 @@ from discord import Embed, Color
 from discord.ext import commands
 import aiohttp, asyncio, json
 
-class Board2Device(commands.Cog):
+class Utilities(commands.Cog):
     """Board2Device"""
     
     def __init__(self, bot):
@@ -40,7 +40,7 @@ class Board2Device(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Board2Device(bot))
+    bot.add_cog(Utilities(bot))
 
 async def fetch(session, url, ctx):
     try:

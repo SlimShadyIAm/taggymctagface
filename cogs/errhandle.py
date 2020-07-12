@@ -62,14 +62,17 @@ class CommandErrorHandler(commands.Cog):
             except discord.HTTPException:
                 pass
 
+        elif isinstance(error, commands.MissingPermissions):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=error))
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
             # super
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(error)
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=error))
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=error + "\n\n You should never receive an error like this. Contact SlimShadyIAm#9999."))
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 def setup(bot):
