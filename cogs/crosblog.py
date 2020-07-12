@@ -1,8 +1,11 @@
-import discord
-from discord import Embed, Color
-from discord.ext import commands
 import asyncio
+import os
+
+import discord
 import feedparser
+from discord import Color, Embed
+from discord.ext import commands
+
 
 class CrosBlog(commands.Cog):
     def __init__(self, bot):
