@@ -3,17 +3,14 @@ from discord import Embed, Color
 from discord.ext import commands
 import asyncio
 
-class Utilities(commands.Cog):
-    """Birthday"""
-    
+class Utilities(commands.Cog):    
     def __init__(self, bot):
         self.bot = bot
     
     @commands.command(name='birthday')
     @commands.has_role("Admin")
     async def birthday(self, ctx, member: discord.Member):
-        """A simple command which repeats our input.
-        In rewrite Context is automatically passed to our commands as the first argument after self."""
+        """Give a user the birthday role for 24 hours\nExample usage: `$birthday @SlimShadyIAm#9999`"""
 
         if member is None:
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="Please supply a member, i.e `$birthday @SlimShadyIAm#9999`"))

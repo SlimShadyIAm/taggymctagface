@@ -12,8 +12,7 @@ class Utilities(commands.Cog):
     
     @commands.command(name='device2board', aliases=['d2b'])
     async def device2board(self, ctx, *search_term: str):
-        """A simple command which repeats our input.
-        In rewrite Context is automatically passed to our commands as the first argument after self."""
+        """(alias $d2b) Retrieve the board name from a specified brand name as a search term\nExample usage: `$d2b acer chromebook 11`"""
         search_term = " ".join(search_term)
         if (search_term == ''):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a board name! Example: `$d2b acer chromebook`"))

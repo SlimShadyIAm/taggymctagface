@@ -33,6 +33,7 @@ class CustomCommands(commands.Cog):
     
     @commands.command(name='list', aliases=["ls"])
     async def list(self, ctx):
+        """List all custom commands"""
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
         try:

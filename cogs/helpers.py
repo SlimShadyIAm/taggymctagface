@@ -13,8 +13,7 @@ class Utilities(commands.Cog):
     
     @commands.command(name='helpers')
     async def helpers(self, ctx):
-        """A simple command which repeats our input.
-        In rewrite Context is automatically passed to our commands as the first argument after self."""
+        """Tag helpers, usable in #support once every 24 hours per user"""
         print()
         if (ctx.channel.name != "support"):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'This command is only usable in <#{discord.utils.get(ctx.guild.channels, name="support").id}>!'))

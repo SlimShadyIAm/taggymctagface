@@ -10,6 +10,7 @@ class Utilities(commands.Cog):
     @commands.command(name="cros-updates", aliases=['updates'])
     @commands.guild_only()
     async def updates(self, ctx, *, board:str=""):
+        """(alias $updates) Get ChromeOS version data for a specified Chromebook board name\nExample usage: `$updates edgar`"""
         board = board.lower()
          
         if (board == ''):

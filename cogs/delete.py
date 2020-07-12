@@ -8,9 +8,10 @@ class CustomCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command(name='delete')
+    @commands.command(name='delete', description="blah")
     @commands.has_permissions(manage_messages=True)
     async def delete(self, ctx, id):
+        """Delete a custom command\nExample usage: `$delete 12345`"""
         if id == None:
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a command ID to delete!"))
             return

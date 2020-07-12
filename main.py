@@ -25,7 +25,7 @@ bot = commands.Bot(command_prefix="$", description='A Rewrite Cog Example')
 if __name__ == '__main__':
     for extension in initial_extensions:
         bot.load_extension(extension)
-
+    
 @bot.check
 async def globally_block_dms(ctx):
     return ctx.guild is not None
