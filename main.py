@@ -18,6 +18,7 @@ initial_extensions = ['cogs.crosupdates',
                         'cogs.device2board', 
                         'cogs.birthday',
                         'cogs.helpers',
+                        'cogs.timeout',
                         'cogs.rolecount'
                     ]
 
