@@ -17,7 +17,8 @@ initial_extensions = ['cogs.crosupdates',
                         'cogs.board2device', 
                         'cogs.device2board', 
                         'cogs.birthday',
-                        'cogs.helpers'
+                        'cogs.helpers',
+                        'cogs.rolecount'
                     ]
 
 bot = commands.Bot(command_prefix="$", description='A Rewrite Cog Example')
