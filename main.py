@@ -22,7 +22,7 @@ initial_extensions = ['cogs.crosupdates',
                         'cogs.rolecount'
                     ]
 
-bot = commands.Bot(command_prefix="$", description='A Rewrite Cog Example')
+bot = commands.Bot(command_prefix="$", description='Taggy McTagface', case_insensitive=True)
 
 if __name__ == '__main__':
     for extension in initial_extensions:
