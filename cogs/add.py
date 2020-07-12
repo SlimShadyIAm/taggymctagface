@@ -22,6 +22,7 @@ class CustomCommands(commands.Cog):
         if (not (args_flag == "true" or args_flag == "false")):
             raise commands.BadArgument("Parameter args_flag should be true or false!\nExample usage:`!add cam-sucks false yeah he does` or `!add fire true You're fired!")
             
+        command_name = command_name.lower()
         response = format(' '.join(response))
         
         if (response == ""):
