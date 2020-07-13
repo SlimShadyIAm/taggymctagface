@@ -19,7 +19,7 @@ class Utilities(commands.Cog):
         role = discord.utils.get(ctx.guild.roles, name="birthday boi")
         if (role is None):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description='birthday boi role not found!'))
-            return;
+            return
         await member.add_roles(role)
         await ctx.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Gave <@{member.id}> the birthday role. We\'ll let them know and remove it in 24 hours.'))
         

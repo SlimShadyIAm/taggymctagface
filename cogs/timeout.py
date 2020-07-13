@@ -18,7 +18,7 @@ class Utilities(commands.Cog):
         role = discord.utils.get(ctx.guild.roles, name="timeout")
         if (role is None):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description='timeout role not found!'))
-            return;
+            return
         
         await ctx.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Gave <@{member.id}> the timeout role. We\'ll let them know and remove it in 15 minutes.'))
         embed = Embed(title="You have been put on timeout.", color=Color(value=0xebde34), description=f'{ctx.author.name} gave you the timeout role. We\'ll remove it in 15 minutes.')

@@ -20,7 +20,7 @@ class Utilities(commands.Cog):
         role = discord.utils.get(ctx.guild.roles, name="rules")
         if (role is None):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description='rules role not found!'))
-            return;
+            return
         
         await ctx.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Gave <@{member.id}> the rules role. We\'ll let them know and remove it in 15 minutes.'))
         channel = discord.utils.get(ctx.guild.channels, name="rules")
