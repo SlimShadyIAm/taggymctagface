@@ -9,27 +9,29 @@ class Utilities(commands.Cog):
 
     @commands.command(name="cros-updates", aliases=['updates'])
     @commands.guild_only()
-    async def updates(self, ctx, *, board:str=""):
+    async def updates(self, ctx, *, board:str):
         """(alias $updates) Get ChromeOS version data for a specified Chromebook board name\nExample usage: `$updates edgar`"""
-        board = board.lower()
-         
-        if (board == ''):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a board name! Example: `$updates coral`"))
-            return
-        
+        # ensure the board arg is only alphabetical chars
         if (not board.isalpha()):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="The board should only be alphabetical characters!"))
-            return
+            raise commands.BadArgument()
 
+        # case insensitivity
+        board = board.lower()
+
+        # fetch data from skylar's API
         data = ""
         async with aiohttp.ClientSession() as session:
             data = await fetch(session, 'https://raw.githubusercontent.com/skylartaylor/cros-updates/master/src/data/cros-updates.json', ctx)
             if data is None:
                 return
-                
+        
+        #parse response to json
         data = json.loads(data)
+        # loop through response to find board
         for data_board in data:
+            # did we find a match
             if data_board['Codename'] == board:
+                # yes, send the data
                 embed = Embed(title=f"ChromeOS update status for {board}", color=Color(value=0x37b83b))
                 version = data_board["Stable"].split("<br>")
                 embed.add_field(name=f'Stable Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
@@ -49,8 +51,17 @@ class Utilities(commands.Cog):
                 await ctx.send(embed=embed)
                 return
 
+        # board not found, error
         await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="Couldn't find a result with that boardname!"))
         return
+
+    # err handling
+    @updates.error
+    async def updates_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a board name! Example: `$updates coral`"))
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="The board should only be alphabetical characters!"))
 
 def setup(bot):
     bot.add_cog(Utilities(bot))
