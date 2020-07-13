@@ -13,7 +13,7 @@ class CustomCommands(commands.Cog):
     
     @commands.command(name='add')
     @commands.has_permissions(manage_messages=True)
-    async def add(self, ctx, command_name:str, args_flag:str, *response):
+    async def add(self, ctx, command_name:str, args_flag:str, *, response:str):
         """Add a new command to the database\nExample usage:`!add cam-sucks false yeah he does` or `!add fire true You're fired!"""
         
         # ensure command name doesn't have illegal chars
@@ -28,7 +28,7 @@ class CustomCommands(commands.Cog):
         # always store command name as lowercase for case insensitivity
         command_name = command_name.lower()
         # join response from param array into a string, to store
-        response = format(' '.join(response))
+        # response = format(' '.join(response))
         
         # ensure user defined a response
         if (response == ""):

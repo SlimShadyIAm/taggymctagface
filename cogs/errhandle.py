@@ -49,7 +49,7 @@ class CommandErrorHandler(commands.Cog):
                     if (pattern.match(response)):
                         response = response + "%20".join(args.split(" "))
                     else:
-                        response = response + args
+                        response = response + " " + args
                     await ctx.send(content=response, allowed_mentions=AllowedMentions(everyone=False, users=True, roles=False))
             finally:
                 conn.close()
