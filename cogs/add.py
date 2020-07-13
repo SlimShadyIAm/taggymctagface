@@ -64,7 +64,7 @@ class CustomCommands(commands.Cog):
         if response != "":
             response = response[:100] + "..." if len(response) > 100 else response
             embed.add_field(name=f'Response', value=response)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed.set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url))
 
     #err handling
     @add.error

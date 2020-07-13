@@ -26,10 +26,10 @@ class Utilities(commands.Cog):
         
         #give user role
         await member.add_roles(role)
-        await ctx.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Gave <@{member.id}> the birthday role. We\'ll let them know and remove it in 24 hours.'))
+        await ctx.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Gave <@{member.id}> the birthday role. We\'ll let them know and remove it in 24 hours.').set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url))
         
         # dm the user to notify them...
-        embed = Embed(title="Happy birthday!  🥳", color=Color(value=0xebde34), description=f'{ctx.author.name} gave you the birthday role. We\'ll remove it in 24 hours.')
+        embed = Embed(title="Happy birthday!  🥳", color=Color(value=0xebde34), description=f'{ctx.author.name} gave you the birthday role. We\'ll remove it in 24 hours.').set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
         try:
             # try to dm them
             await member.send(embed=embed)
@@ -44,7 +44,7 @@ class Utilities(commands.Cog):
         await member.remove_roles(discord.utils.get(ctx.guild.roles, name="birthday boi"))        
 
         # again try to dm user to notify them
-        embed=Embed(title="Party's over.", color=Color(value=0x37b83b), description='Removed your birthday role.')
+        embed=Embed(title="Party's over.", color=Color(value=0x37b83b), description='Removed your birthday role.').set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
         try:
             await member.send(embed=embed)
         except discord.Forbidden:

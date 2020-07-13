@@ -34,7 +34,7 @@ class Utilities(commands.Cog):
         for device in response:
             # if we find a match, send response
             if device["Codename"] == board:
-                await ctx.send(embed=Embed(title=f'{device["Codename"]} belongs to...', color=Color(value=0x37b83b), description=device["Brand names"]))
+                await ctx.send(embed=Embed(title=f'{device["Codename"]} belongs to...', color=Color(value=0x37b83b), description=device["Brand names"]).set_footer(text=f"Powered by https://cros.tech/ (by Skylar), requested by {ctx.author.name}#{ctx.author.discriminator}", icon_url=ctx.author.avatar_url))
                 return
         
         # no match, send error response

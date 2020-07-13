@@ -81,10 +81,16 @@ class DealWatcher(commands.Cog):
 
         # has the feed changed?
         if (data.status != 304):
-            # yes, check if they have tags we want
-            for post in data.entries:
-                print(f'NEW GOOD ENTRY: {post.title} {post.link}')
-            await self.check_new_entries(feed, data.entries)
+            # get newest post date from cached data. any new post will have a date newer than this
+            max_prev_date = max([something["published_parsed"] for something in feed["prev_data"].entries])
+            # get new posts
+            new_posts = [post for post in data.entries if post["published_parsed"] > max_prev_date]
+            # if there rae new posts
+            if (len(new_posts) > 0):
+                # check thier tags
+                for post in new_posts:
+                    print(f'NEW GOOD ENTRY: {post.title} {post.link}')
+                await self.check_new_entries(feed, new_posts)  
         
         feed["prev_data"] = data
 

@@ -47,7 +47,7 @@ class Utilities(commands.Cog):
                     if len(version) == 2:
                         embed.add_field(name=f'Canary Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
                 
-                embed.set_footer(text="Powered by https://cros.tech/ (by Skylar)")
+                embed.set_footer(text=f"Powered by https://cros.tech/ (by Skylar), requested by {ctx.author.name}#{ctx.author.discriminator}", icon_url=ctx.author.avatar_url)
                 await ctx.send(embed=embed)
                 return
 

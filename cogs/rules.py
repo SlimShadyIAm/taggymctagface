@@ -22,9 +22,9 @@ class Utilities(commands.Cog):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description='rules role not found!'))
             return
         
-        await ctx.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Gave <@{member.id}> the rules role. We\'ll let them know and remove it in 15 minutes.'))
+        await ctx.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Gave <@{member.id}> the rules role. We\'ll let them know and remove it in 15 minutes.').set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url))
         channel = discord.utils.get(ctx.guild.channels, name="rules")
-        embed = Embed(title="You have been put on timeout.", color=Color(value=0xebde34), description=f'{ctx.author.name} thinks you need to review the rules. You\'ve been placed on timeout for 15 minutes. Please review the rules in <#{channel.id}>.')
+        embed = Embed(title="You have been put on timeout.", color=Color(value=0xebde34), description=f'{ctx.author.name} thinks you need to review the rules. You\'ve been placed on timeout for 15 minutes. Please review the rules in <#{channel.id}>.').set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
         try:
             await member.send(embed=embed)
             await member.add_roles(role)
@@ -36,7 +36,7 @@ class Utilities(commands.Cog):
         
         await asyncio.sleep(900)
         
-        embed=Embed(title="Timeout finished.", color=Color(value=0x37b83b), description='Removed your timeout role. Please behave, or we will have to take further action.')
+        embed=Embed(title="Timeout finished.", color=Color(value=0x37b83b), description='Removed your timeout role. Please behave, or we will have to take further action.').set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
         try:
             await member.send(embed=embed)
             await member.remove_roles(role)
@@ -45,7 +45,7 @@ class Utilities(commands.Cog):
             await channel.send(f'<@{member.id}> I tried to DM this to you, but your DMs are closed!', embed=embed)
             await member.remove_roles(role)
     
-        await ctx.author.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Removed {member.name}\'s timeout role.'))
+        await ctx.author.send(embed=Embed(title="Done!", color=Color(value=0x37b83b), description=f'Removed {member.name}\'s timeout role.').set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url))
 
     
     @rules.error
