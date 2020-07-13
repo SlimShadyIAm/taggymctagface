@@ -20,7 +20,7 @@ class Utilities(commands.Cog):
         guild_id = 525250440212774912 if os.environ.get('PRODUCTION') == "false" else 253908290105376768
         guild = self.bot.get_guild(guild_id)
         guild_channels = guild.channels
-        channel = discord.utils.get(guild_channels, name="roles")
+        channel = discord.utils.get(guild_channels, name="assign-roles")
         messages = await channel.history(limit=10).flatten()
         
         roles_to_track = ["iOS", "macOS", "watchOS"] if os.environ.get('PRODUCTION') == "false" else [
