@@ -70,9 +70,10 @@ class CommandErrorHandler(commands.Cog):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
             # super
-        # elif isinstance(error, commands.MissingRequiredArgument):
-        #     if ctx.command.qualified_name == "board2device":
-        #         await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="Missing argument `board`! Example usage: "))
+       
+        elif isinstance(error, commands.NotOwner):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="This command can only be used by the owner of the bot, SlimShadyIAm#9999"))
+       
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}').set_footer(text="You should never receive an error like this. Contact SlimShadyIAm#9999."))

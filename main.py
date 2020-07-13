@@ -37,7 +37,7 @@ async def globally_block_dms(ctx):
 @bot.event
 async def on_ready():
     print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}\nVersion: {discord.__version__}\n')
-    await bot.change_presence(status=discord.Status.idle, activity=discord.Game(name='Cogs Example', type=1, url='https://twitch.tv/kraken'))
+    await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(details='over r/ChromeOS', state='over r/ChromeOS', name='over r/ChromeOS', type=discord.ActivityType.watching))
     print(f'Successfully logged in and booted...!')
     conn = sqlite3.connect('commands.sqlite')
     c = conn.cursor()
@@ -46,7 +46,6 @@ async def on_ready():
     if (res[0] == 0):
         c.execute("CREATE TABLE IF NOT EXISTS commands (command_id INTEGER PRIMARY KEY, server_id TEXT, user_who_added TEXT, command_name TEXT, no_of_uses INTEGER, response TEXT, args TEXT);")
         c.execute("CREATE UNIQUE INDEX idx_command_id ON commands (command_id);")
-        print("created!")
     conn.commit()
     conn.close()
 

@@ -6,9 +6,7 @@ import discord
 from discord import Color, Embed
 from discord.ext import commands
 
-class Utilities(commands.Cog):
-    """Board2Device"""
-    
+class Utilities(commands.Cog):    
     def __init__(self, bot):
         self.bot = bot
     
@@ -16,25 +14,33 @@ class Utilities(commands.Cog):
     async def board2device(self, ctx, board: str):
         """(alias $b2d) Retreive the brand name for a given Chromebook board name\nExample usage: `$b2d edgar`"""
 
+        # ensure the board arg is only alphabetical chars
         if (not board.isalpha()):
             raise commands.BadArgument()
 
+        # case insensitivity
         board = board.lower()
 
+        # fetch data from skylar's API
         response = ""
         async with aiohttp.ClientSession() as session:
             response = await fetch(session, 'https://raw.githubusercontent.com/skylartaylor/cros-updates/master/src/data/cros-updates.json', ctx)
             if response is None:
                 return
 
+        # str -> JSON
         response = json.loads(response)
+        # loop through response to find a matching board name
         for device in response:
+            # if we find a match, send response
             if device["Codename"] == board:
                 await ctx.send(embed=Embed(title=f'{device["Codename"]} belongs to...', color=Color(value=0x37b83b), description=device["Brand names"]))
                 return
         
+        # no match, send error response
         await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="A board with that name was not found!"))
 
+    # err handling
     @board2device.error
     async def b2d_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):

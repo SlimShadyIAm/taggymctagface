@@ -1,3 +1,4 @@
+from discord import Embed, Color
 from discord.ext import commands
 
 
@@ -50,9 +51,7 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def all_cogs(self, ctx):
         """List of all cogs"""
-
         await ctx.send(f'All cogs: {[ext for ext in self.bot.extensions.keys()]}')
-
 
 def setup(bot):
     bot.add_cog(Admin(bot))

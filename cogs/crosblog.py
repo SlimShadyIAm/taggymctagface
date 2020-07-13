@@ -8,13 +8,16 @@ from discord.ext import commands
 
 
 class CrosBlog(commands.Cog):
+    """Watch Google's release feed to watch for new ChromeOS updates. Send to Discord channel if found."""
     def __init__(self, bot):
         self.bot = bot
         self.url = "http://feeds.feedburner.com/GoogleChromeReleases"
         self.prev_data = feedparser.parse(self.url)
 
+        # create thread for loop which watches feed
         self.loop = asyncio.get_event_loop().create_task(self.watcher())
 
+    # cancel loop when unloading cog
     def cog_unload(self):
         self.loop.cancel()
         print("STOPPING...")
@@ -22,18 +25,47 @@ class CrosBlog(commands.Cog):
     
     # the watcher thread
     async def watcher(self):
+        # wait for bot to start
         await self.bot.wait_until_ready()
-        while True:
+        while not self.loop.cancelled():
+            
+            """ This commented out code doesn't work for feeds that don't support etag/last-modified headers :(
+            # get args for parser -- if feed has modified and etag support, use those as parameters
+            # we use modified and etag data from previous iteration to see if anything changed
+            # between now and the last time we checked the feed
             kwargs = dict(modified=self.prev_data.modified if hasattr(self.prev_data, 'modified') else None, etag=self.prev_data.etag if hasattr(self.prev_data, 'modified')  else None)
             data = feedparser.parse(self.url, **{k: v for k, v in kwargs.items() if v is not None})
 
-            if (data.status == 304):
+            # has the feed changed?
+            if (data.status != 304):
+                # yes, check the new entries to see if any are what we want
                 await self.check_new_entries(data.entries)
+            # update local cache to compare against in next iteration
+            # """
+
+            # fetch feed posts
+            data = feedparser.parse(self.url)
+            # determine the newest post date from the cached posts
+            max_prev_date = max([something["published_parsed"] for something in self.prev_data.entries])
+            # get a list of posts from the new posts where the date is newer than the max_prev_date
+            new_posts = [post for post in data.entries if post["published_parsed"] > max_prev_date]
+            # new posts?
+            if (len(new_posts) > 0):
+                # check each new post for matching tags
+                for post in new_posts:
+                    print(f'NEW BLOG ENTRY: {post.title} {post.link}')
+                await self.check_new_entries(new_posts)   
+
+            # update local cache
             self.prev_data = data
-            await asyncio.sleep(10)
+            # wait 1 minute before checking feed again
+            await asyncio.sleep(5)
             
 
     async def check_new_entries(self, posts):
+        # loop through new entries to see if tags contain one that we want
+        # if we find match, post update in channel
+        print(posts)
         for post in posts:
             tags = [thing["term"] for thing in post["tags"]]
             if "Chrome OS" in tags:
@@ -48,6 +80,8 @@ class CrosBlog(commands.Cog):
         pass
 
     async def push_update(self, post, category=None):
+        # which guild to post to depending on if we're prod or dev
+        #post update to channel
         guild_id = 525250440212774912 if os.environ.get('PRODUCTION') == "false" else 253908290105376768
         guild_channels = self.bot.get_guild(guild_id).channels
         channel = discord.utils.get(guild_channels, name="deals-and-updates")
