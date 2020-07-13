@@ -12,6 +12,7 @@ bott = None
 class DealWatcher(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        # all the feeds we need to watch
         self.feeds = [
             {
                 'feed': "https://www.aboutchromebooks.com/feed/",
@@ -46,30 +47,39 @@ class DealWatcher(commands.Cog):
             }
         ]
 
-        self.loops = [asyncio.get_event_loop().create_task(self.watcher(feed)) for feed in self.feeds]
+        # create watcher thread for all feeds, store in dict to cancel if needed
+        self.loops = {}
+        for feed in self.feeds:
+            self.loops[feed["name"]] = asyncio.get_event_loop().create_task(self.watcher(feed))
 
+    # before unloading cog, stop all watcher threads
     def cog_unload(self):
-        [loop.cancel() for loop in self.loops]
-        print("STOPPING...")
+        [self.loops[loop].cancel() for loop in self.loops.keys()]
 
     # the watcher thread
     async def watcher(self, feed):
+        # wait for bot to start
         await self.bot.wait_until_ready()
-        while True:
+        # is this thread still supposed to be running?
+        while not self.loops[feed["name"]].cancelled():
+            # handle feeds with/without HTTP last-modified support differently
             if feed['good_feed'] is True:
                 await self.good_feed(feed)
             else:
                 await self.bad_feed(feed) 
-            await asyncio.sleep(10)
+            
+            # loop every 60 seconds
+            await asyncio.sleep(60)
         
 
     # feed watcher for feeds with proper etag support
-    
     async def good_feed(self, feed):
         kwargs = dict(modified=feed["prev_data"].modified if hasattr(feed["prev_data"], 'modified') else None, etag=feed["prev_data"].etag if hasattr(feed["prev_data"], 'modified')  else None)
         data = feedparser.parse(feed["feed"], **{k: v for k, v in kwargs.items() if v is not None})
 
         if (data.status != 304):
+            for post in data.entries:
+                print(f'NEW GOOD ENTRY: {post.title} {post.link}')
             await self.check_new_entries(feed, data.entries)
         
         feed["prev_data"] = data

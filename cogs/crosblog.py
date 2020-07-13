@@ -59,7 +59,7 @@ class CrosBlog(commands.Cog):
             # update local cache
             self.prev_data = data
             # wait 1 minute before checking feed again
-            await asyncio.sleep(5)
+            await asyncio.sleep(60)
             
 
     async def check_new_entries(self, posts):
