@@ -74,10 +74,14 @@ class DealWatcher(commands.Cog):
 
     # feed watcher for feeds with proper etag support
     async def good_feed(self, feed):
+        #determine args (from cached data)
         kwargs = dict(modified=feed["prev_data"].modified if hasattr(feed["prev_data"], 'modified') else None, etag=feed["prev_data"].etag if hasattr(feed["prev_data"], 'modified')  else None)
+        # fetch feed data w/ args
         data = feedparser.parse(feed["feed"], **{k: v for k, v in kwargs.items() if v is not None})
 
+        # has the feed changed?
         if (data.status != 304):
+            # yes, check if they have tags we want
             for post in data.entries:
                 print(f'NEW GOOD ENTRY: {post.title} {post.link}')
             await self.check_new_entries(feed, data.entries)
@@ -86,16 +90,23 @@ class DealWatcher(commands.Cog):
 
     # improper etag support
     async def bad_feed(self, feed):
+        #fetch feed data
         data = feedparser.parse(feed["feed"])
+        # get newest post date from cached data. any new post will have a date newer than this
         max_prev_date = max([something["published_parsed"] for something in feed["prev_data"].entries])
+        # get new posts
         new_posts = [post for post in data.entries if post["published_parsed"] > max_prev_date]
+        # if there rae new posts
         if (len(new_posts) > 0):
+            # check thier tags
             for post in new_posts:
                 print(f'NEW BAD ENTRY: {post.title} {post.link}')
             await self.check_new_entries(feed, new_posts)   
         feed["prev_data"] = data
 
     async def check_new_entries(self, feed, entries):
+        # loop through new entries to see if tags contain one that we want
+        # if we find match, post update in channel
         for entry in entries:
             post_tags = [tag.term.lower() for tag in entry.tags]
             if len(feed["requiredFilters"]) != 0:

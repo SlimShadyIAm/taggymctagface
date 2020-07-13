@@ -50,6 +50,7 @@ class Utilities(commands.Cog):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
         elif isinstance(error, commands.BadArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+
 class Source(menus.GroupByPageSource):
     async def format_page(self, menu, entry):
         embed = Embed(title=f'Search results: Page {menu.current_page +1}/{self.get_max_pages()}')
