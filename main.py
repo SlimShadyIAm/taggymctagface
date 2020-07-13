@@ -19,6 +19,7 @@ initial_extensions = [
                         'cogs.errhandle', 
                         'cogs.helpers',
                         'cogs.list', 
+                        'cogs.ping', 
                         'cogs.rolecount',
                         'cogs.rules',
                         'cogs.timeout'
