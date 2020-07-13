@@ -6,20 +6,22 @@ import sqlite3
 async def on_message(self, message):
     print('Message from {0.author}: {0.content}'.format(message))
 
-initial_extensions = ['cogs.crosupdates', 
-                        'cogs.admin', 
-                        'cogs.crosblog', 
-                        'cogs.dealwatcher', 
-                        'cogs.errhandle', 
+initial_extensions = [
                         'cogs.add',
-                        'cogs.delete', 
-                        'cogs.list', 
-                        'cogs.board2device', 
-                        'cogs.device2board', 
+                        'cogs.admin', 
                         'cogs.birthday',
+                        'cogs.board2device', 
+                        'cogs.crosblog', 
+                        'cogs.crosupdates', 
+                        'cogs.dealwatcher', 
+                        'cogs.delete', 
+                        'cogs.device2board', 
+                        'cogs.errhandle', 
                         'cogs.helpers',
-                        'cogs.timeout',
-                        'cogs.rolecount'
+                        'cogs.list', 
+                        'cogs.rolecount',
+                        'cogs.rules',
+                        'cogs.timeout'
                     ]
 
 bot = commands.Bot(command_prefix="$", description='Taggy McTagface', case_insensitive=True)
