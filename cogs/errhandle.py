@@ -7,6 +7,7 @@ from os.path import abspath, dirname
 
 import discord
 from discord import Color, Embed
+from discord import AllowedMentions
 from discord.ext import commands
 
 
@@ -49,7 +50,7 @@ class CommandErrorHandler(commands.Cog):
                         response = response + "%20".join(args.split(" "))
                     else:
                         response = response + args
-                    await ctx.send(response)
+                    await ctx.send(content=response, allowed_mentions=AllowedMentions(everyone=False, users=True, roles=False))
             finally:
                 conn.close()
             

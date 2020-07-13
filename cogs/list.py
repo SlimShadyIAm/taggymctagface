@@ -12,7 +12,8 @@ class Source(menus.GroupByPageSource):
         embed = Embed(title=f'Commands: Page {menu.current_page +1}/{self.get_max_pages()}')
         for v in entry.items:
             res = v[5][:50] + "..." if len(v[5]) > 50 else v[5]
-            embed.add_field(name=f'${v[3]}', value=f'**ID**:{v[0]}\n**Supports arguments**:{v[6]}\n**Response**:{res}\n**Creator**:<@{v[2]}>\n**Number of uses**:{v[4]}')
+            argo = " [args]" if v[6] == "true" else ""
+            embed.add_field(name=f'${v[3]}{argo}', value=f'**ID**:{v[0]}\n**Supports arguments**:{v[6]}\n**Response**:{res}\n**Creator**:<@{v[2]}>\n**Number of uses**:{v[4]}')
         return embed
 
 class NewMenuPages(menus.MenuPages):
