@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+
+[packages]
+feedparser = "*"
+discord-ext-menus = {git = "https://github.com/Rapptz/discord-ext-menus"}
+aiohttp = "*"
+"discord.py" = {git = "https://github.com/Rapptz/discord.py"}
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+run = "python main.py"
