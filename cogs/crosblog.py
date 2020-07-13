@@ -20,8 +20,6 @@ class CrosBlog(commands.Cog):
     # cancel loop when unloading cog
     def cog_unload(self):
         self.loop.cancel()
-        print("STOPPING...")
-
     
     # the watcher thread
     async def watcher(self):

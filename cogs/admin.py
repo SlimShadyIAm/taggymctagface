@@ -39,13 +39,25 @@ class Admin(commands.Cog):
         """Command which Reloads a Module.
         Remember to use dot path. e.g: cogs.owner"""
 
-        try:
-            self.bot.unload_extension(cog)
-            self.bot.load_extension(cog)
-        except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-        else:
+        if cog.lower() == "all":
+            cogs = self.bot.extensions.copy()
+            for cog in cogs:
+                try:
+                    self.bot.unload_extension(cog)
+                    self.bot.load_extension(cog)
+                except Exception as e:
+                    await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+                    return
+            
             await ctx.send('**`SUCCESS`**')
+        else:
+            try:
+                self.bot.unload_extension(cog)
+                self.bot.load_extension(cog)
+            except Exception as e:
+                await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            else:
+                await ctx.send('**`SUCCESS`**')
 
     @commands.command(name='cogs', hidden=True)
     @commands.is_owner()
