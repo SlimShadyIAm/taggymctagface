@@ -22,6 +22,7 @@ initial_extensions = [
                         'cogs.ping', 
                         'cogs.rolecount',
                         'cogs.rules',
+                        'cogs.search',
                         'cogs.timeout'
                     ]
 

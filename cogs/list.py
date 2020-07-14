@@ -13,6 +13,8 @@ class Source(menus.GroupByPageSource):
         for v in entry.items:
             res = v[5][:50] + "..." if len(v[5]) > 50 else v[5]
             argo = " [args]" if v[6] == "true" else ""
+            if (argo != ""):
+                res += argo
             embed.add_field(name=f'${v[3]}{argo}', value=f'**ID**:{v[0]}\n**Supports arguments**:{v[6]}\n**Response**:{res}\n**Creator**:<@{v[2]}>\n**Number of uses**:{v[4]}')
         return embed
 
