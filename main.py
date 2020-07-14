@@ -40,6 +40,7 @@ async def on_ready():
     print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}\nVersion: {discord.__version__}\n')
     await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(details='over r/ChromeOS', state='over r/ChromeOS', name='over r/ChromeOS', type=discord.ActivityType.watching))
     print(f'Successfully logged in and booted...!')
+
     conn = sqlite3.connect('commands.sqlite')
     c = conn.cursor()
     c.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='commands';")

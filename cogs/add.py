@@ -1,3 +1,4 @@
+import asyncio
 import os
 import random
 import re
@@ -44,27 +45,86 @@ class CustomCommands(commands.Cog):
             c.execute("SELECT * FROM commands WHERE command_name = ? AND args = ? AND server_id = ?;", (command_name, args_flag, ctx.guild.id,))
             
             res = c.fetchall()
-            # command name in use
-            if len(res) > 0:
-                await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="That command already exists!"))
-                return
-            
-            # yay this isn't in use, store it
+        finally:
+            conn.close()
+        
+        #prepare response 
+        this_id = -1
+        while True:
             this_id = gen_id()
+            try:
+                # ensure this command name isn't in use (you can have the same command name with arg type true and false)
+                conn = sqlite3.connect(db_path)
+                c = conn.cursor()
+                c.execute("SELECT * FROM commands WHERE command_id = ?;", (this_id,))
+                
+                test_id = c.fetchall()
+
+                if (len(test_id) == 0):
+                    break
+            finally:
+                conn.close()
+
+        embed = Embed(title=f"Added command!", color=Color(value=0x37b83b))
+        embed.add_field(name=f'Command name', value=command_name)
+        embed.add_field(name=f'Args supported?', value=args_flag)
+        if response != "":
+            response = response[:100] + "..." if len(response) > 100 else response
+            embed.add_field(name=f'Response', value=response)
+        embed.set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
+        
+        # does a command with this name and arg type already exist?
+        if len(res) > 0:
+            # yes, give the user the option to overwrite the response
+            msg = await ctx.send(embed=Embed(title="Command already exists!", color=Color(value=0xebdb34), description="That command already exists! Would you like to overwrite it?"))
+            await msg.add_reaction('👍')
+            await msg.add_reaction('👎')
+            
+            # check for whether user reacted properly
+            def check(reaction, user):
+                return user == ctx.message.author and (str(reaction.emoji) == '👍' or str(reaction.emoji) == '👎')
+
+            # prompt user, wait for reaction (30 second timeout)
+            try:
+                reaction,_ = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
+            except asyncio.TimeoutError:
+                await msg.clear_reactions()
+                await msg.edit(embed=Embed(title="Timed out!", color=Color(value=0xEB4634), description=f"Command `${command_name}` will not be added."))
+                return
+            else:
+                await msg.clear_reactions()
+                if (str(reaction.emoji) == '👍'):
+                    # overwrite command
+                    try:
+                        conn = sqlite3.connect(db_path)
+                        c = conn.cursor()
+                        this_id = res[0][0]
+                        c.execute("UPDATE commands SET user_who_added = ?, no_of_uses = ?, response = ? WHERE command_id = ?;", (ctx.author.id, 0, response, this_id))
+                        conn.commit()
+                        embed.add_field(name=f'ID', value=this_id)
+                        await msg.edit(embed=embed)
+                    finally:
+                        conn.close()
+                    return
+                else:
+                    # cancel
+                    await msg.edit(embed=Embed(title="Cancelled!", color=Color(value=0xEB4634), description=f"Command `${command_name}` will not be added."))
+                    return
+            return
+        
+        # command name was not in use, add it normally
+        try:
+            conn = sqlite3.connect(db_path)
+            c = conn.cursor()
+    
             c.execute("INSERT OR REPLACE INTO commands (command_id, server_id, user_who_added, command_name, no_of_uses, response, args) VALUES (?, ?, ?, ?, ?, ?, ?)", (this_id, ctx.guild.id, ctx.author.id, command_name, 0, response, args_flag ))
             conn.commit()
         finally:
             conn.close()
         
         # send success response
-        embed = embed=Embed(title=f"Added command!", color=Color(value=0x37b83b))
-        embed.add_field(name=f'Command name', value=command_name)
-        embed.add_field(name=f'Args supported?', value=args_flag)
         embed.add_field(name=f'ID', value=this_id)
-        if response != "":
-            response = response[:100] + "..." if len(response) > 100 else response
-            embed.add_field(name=f'Response', value=response)
-        await ctx.send(embed=embed.set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url))
+        await ctx.send(embed=embed)
 
     #err handling
     @add.error
