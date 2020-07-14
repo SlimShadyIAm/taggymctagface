@@ -1,11 +1,35 @@
 import os
-import random
 import re
 import sqlite3
 from os.path import abspath, dirname
 
+import discord
 from discord import Color, Embed
-from discord.ext import commands
+from discord.ext import commands, menus
+
+
+class Source(menus.GroupByPageSource):
+    async def format_page(self, menu, entry):
+        embed = Embed(title=f'Search results: {menu.current_page +1}/{self.get_max_pages()}')
+        for v in entry.items:
+            res = v[5][:50] + "..." if len(v[5]) > 50 else v[5]
+            argo = " [args]" if v[6] == "true" else ""
+            if (argo != ""):
+                res += argo
+            embed.add_field(name=f'${v[3]}{argo}', value=f'**ID**:{v[0]}\n**Supports arguments**:{v[6]}\n**Response**:{res}\n**Creator**:<@{v[2]}>\n**Number of uses**:{v[4]}')
+        return embed
+
+class NewMenuPages(menus.MenuPages):
+    async def update(self, payload):
+        if self._can_remove_reactions:
+            if payload.event_type == 'REACTION_ADD':
+                await self.bot.http.remove_reaction(
+                    payload.channel_id, payload.message_id,
+                    discord.Message._emoji_reaction(payload.emoji), payload.member.id
+                )
+            elif payload.event_type == 'REACTION_REMOVE':
+                return
+        await super().update(payload)
 
 class CustomCommands(commands.Cog):
     def __init__(self, bot):
@@ -41,20 +65,10 @@ class CustomCommands(commands.Cog):
         if len(match) == 0:
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'No commands found with that name!'))
             return
-        
-        embed = Embed(title=f"Search results:", color=Color(value=0x37b83b))
-        for command in match:
-            #prepare response 
-            res = command[5][:50] + "..." if len(command[5]) > 50 else command[5]
-            argo = " [args]" if command[6] == "true" else ""
-            if (argo != ""):
-                res += argo
-            embed.add_field(name=f'${command[3]}{argo}', value=f'**ID**:{command[0]}\n**Supports arguments**:{command[6]}\n**Response**:{res}\n**Creator**:<@{command[2]}>\n**Number of uses**:{command[4]}')
-            embed.set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
-            
-        # send success response
-        await ctx.send(embed=embed)
-
+        #send paginated results
+        pages = NewMenuPages(source=Source(match, key=lambda t: 1, per_page=6), clear_reactions_after=True)
+        await pages.start(ctx)
+       
     #err handling
     @search.error
     async def add_error(self, ctx, error):
