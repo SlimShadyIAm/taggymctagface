@@ -11,10 +11,11 @@ class Source(menus.GroupByPageSource):
     async def format_page(self, menu, entry):
         embed = Embed(title=f'Commands: Page {menu.current_page +1}/{self.get_max_pages()}')
         for v in entry.items:
+            res = v[5][:50] + "..." if len(v[5]) > 50 else v[5]
             argo = " [args]" if v[6] == "true" else ""
             if (argo != ""):
                 res += argo
-            embed.add_field(name=f'${v[3]}{argo}', value=f'**ID**: {v[0]}\n**Supports arguments**: {v[6]}\n**Creator**: <@{v[2]}>')
+            embed.add_field(name=f'${v[3]}{argo}', value=f'**ID**: {v[0]}\n**Supports arguments**: {v[6]}\n**Response**: {res}\n**Creator**: <@{v[2]}>\n**Number of uses**: {v[4]}')
         return embed
 
 class NewMenuPages(menus.MenuPages):
@@ -35,7 +36,7 @@ class CustomCommands(commands.Cog):
     
     @commands.command(name='list', aliases=["ls"])
     async def list(self, ctx):
-        """Search through commands for matching name by keyword\nExample usage: `!search cros`"""
+        """List all custom commands"""
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
         try:

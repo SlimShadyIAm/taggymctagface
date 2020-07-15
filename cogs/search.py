@@ -16,7 +16,7 @@ class Source(menus.GroupByPageSource):
             argo = " [args]" if v[6] == "true" else ""
             if (argo != ""):
                 res += argo
-            embed.add_field(name=f'${v[3]}{argo}', value=f'**ID**: {v[0]}\n**Supports arguments**: {v[6]}')
+            embed.add_field(name=f'${v[3]}{argo}', value=f'**ID**: {v[0]}\n**Supports arguments**: {v[6]}\n**Creator**: <@{v[2]}>')
         return embed
 
 class NewMenuPages(menus.MenuPages):
@@ -37,7 +37,7 @@ class CustomCommands(commands.Cog):
     
     @commands.command(name='search')
     async def search(self, ctx, command_name:str):
-        """Add a new command to the database\nExample usage:`!add cam-sucks false yeah he does` or `!add fire true You're fired!"""
+        """Search through commands for matching name by keyword\nExample usage: `!search cros`"""
         
         # ensure command name doesn't have illegal chars
         pattern = re.compile("^[a-zA-Z0-9_-]*$")
