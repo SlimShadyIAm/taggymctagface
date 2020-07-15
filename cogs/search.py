@@ -16,7 +16,7 @@ class Source(menus.GroupByPageSource):
             argo = " [args]" if v[6] == "true" else ""
             if (argo != ""):
                 res += argo
-            embed.add_field(name=f'${v[3]}{argo}', value=f'**ID**:{v[0]}\n**Supports arguments**:{v[6]}\n**Response**:{res}\n**Creator**:<@{v[2]}>\n**Number of uses**:{v[4]}')
+            embed.add_field(name=f'${v[3]}{argo}', value=f'**ID**: {v[0]}\n**Supports arguments**: {v[6]}')
         return embed
 
 class NewMenuPages(menus.MenuPages):

@@ -15,7 +15,7 @@ class CustomCommands(commands.Cog):
     @commands.command(name='add')
     @commands.has_permissions(manage_messages=True)
     async def add(self, ctx, command_name:str, args_flag:str, *, response:str):
-        """Add a new command to the database\nExample usage:`!add cam-sucks false yeah he does` or `!add fire true You're fired!"""
+        """Add a new command to the database\nExample usage:`!add cam-sucks false yeah he does` or `!add fire true You're fired!`"""
         
         # ensure command name doesn't have illegal chars
         pattern = re.compile("^[a-zA-Z0-9_-]*$")
