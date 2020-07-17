@@ -11,6 +11,7 @@ feedparser = "*"
 discord-ext-menus = {git = "https://github.com/Rapptz/discord-ext-menus"}
 aiohttp = "*"
 "discord.py" = {git = "https://github.com/Rapptz/discord.py"}
+psutil = "*"
 
 [requires]
 python_version = "3.8"
