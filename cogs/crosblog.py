@@ -9,6 +9,7 @@ from discord.ext import commands
 
 class CrosBlog(commands.Cog):
     """Watch Google's release feed to watch for new ChromeOS updates. Send to Discord channel if found."""
+
     def __init__(self, bot):
         self.bot = bot
         self.url = "http://feeds.feedburner.com/GoogleChromeReleases"
@@ -20,13 +21,13 @@ class CrosBlog(commands.Cog):
     # cancel loop when unloading cog
     def cog_unload(self):
         self.loop.cancel()
-    
+
     # the watcher thread
     async def watcher(self):
         # wait for bot to start
         await self.bot.wait_until_ready()
         while not self.loop.cancelled():
-            
+
             """ This commented out code doesn't work for feeds that don't support etag/last-modified headers :(
             # get args for parser -- if feed has modified and etag support, use those as parameters
             # we use modified and etag data from previous iteration to see if anything changed
@@ -44,21 +45,22 @@ class CrosBlog(commands.Cog):
             # fetch feed posts
             data = feedparser.parse(self.url)
             # determine the newest post date from the cached posts
-            max_prev_date = max([something["published_parsed"] for something in self.prev_data.entries])
+            max_prev_date = max([something["published_parsed"]
+                                 for something in self.prev_data.entries])
             # get a list of posts from the new posts where the date is newer than the max_prev_date
-            new_posts = [post for post in data.entries if post["published_parsed"] > max_prev_date]
+            new_posts = [
+                post for post in data.entries if post["published_parsed"] > max_prev_date]
             # new posts?
             if (len(new_posts) > 0):
                 # check each new post for matching tags
                 for post in new_posts:
                     print(f'NEW BLOG ENTRY: {post.title} {post.link}')
-                await self.check_new_entries(new_posts)   
+                await self.check_new_entries(new_posts)
 
             # update local cache
             self.prev_data = data
             # wait 1 minute before checking feed again
             await asyncio.sleep(60)
-            
 
     async def check_new_entries(self, posts):
         # loop through new entries to see if tags contain one that we want
@@ -68,25 +70,30 @@ class CrosBlog(commands.Cog):
             tags = [thing["term"] for thing in post["tags"]]
             if "Chrome OS" in tags:
                 if "Stable updates" in tags:
-                    await self.push_update(post, "Stable updates")
+                    await self.push_update(post, "Stable Channel")
                 elif "Beta updates" in tags:
-                    await self.push_update(post, "Beta updates")
+                    await self.push_update(post, "Beta Channel")
                 elif "Dev updates" in tags:
-                    await self.push_update(post, "Dev updates")
+                    await self.push_update(post, "Dev Channel")
                 elif "Canary updates" in tags:
-                    await self.push_update(post, "Canary updates")
+                    await self.push_update(post, "Canary Channel")
         pass
 
     async def push_update(self, post, category=None):
         # which guild to post to depending on if we're prod or dev
-        #post update to channel
-        guild_id = 525250440212774912 if os.environ.get('PRODUCTION') == "false" else 253908290105376768
+        # post update to channel
+        guild_id = 525250440212774912 if os.environ.get(
+            'PRODUCTION') == "false" else 253908290105376768
         guild_channels = self.bot.get_guild(guild_id).channels
+        guild_roles = self.bot.get_guild(guild_id).roles
         channel = discord.utils.get(guild_channels, name="deals-and-updates")
         if (category is None):
             await (channel.send(f'New blog was posted!\n{post.title}\n{post.link}'))
         else:
-            await (channel.send(f'New blog was posted for {category} channel!\n{post.title}\n{post.link}'))
-        
+            role = discord.utils.get(guild_roles, name=category)
+            if role:
+                await (channel.send(f'{role.mention} New blog was posted for {category}!\n{post.title}\n{post.link}'))
+
+
 def setup(bot):
     bot.add_cog(CrosBlog(bot))
