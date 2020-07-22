@@ -20,6 +20,7 @@ initial_extensions = [
     'cogs.errhandle',
     'cogs.help',
     'cogs.helpers',
+    'cogs.history',
     'cogs.karma',
     'cogs.list',
     'cogs.ping',
