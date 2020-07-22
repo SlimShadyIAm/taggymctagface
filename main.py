@@ -56,8 +56,8 @@ async def on_ready():
         c = conn.cursor()
         c.execute("CREATE TABLE IF NOT EXISTS commands (command_id INTEGER PRIMARY KEY, server_id TEXT, user_who_added TEXT, command_name TEXT, no_of_uses INTEGER, response TEXT, args TEXT);")
         c.execute(
-            "CREATE TABLE IF NOT EXISTS karma (user_id INTEGER PRIMARY KEY, karma INTEGER);")
-        c.execute("CREATE TABLE IF NOT EXISTS karma_history (hist_id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, invoker_id INTEGER, amount INTEGER, timestamp DATETIME);")
+            "CREATE TABLE IF NOT EXISTS karma (user_id INTEGER, guild_id INTEGER, karma INTEGER, PRIMARY KEY (user_id, guild_id));")
+        c.execute("CREATE TABLE IF NOT EXISTS karma_history (hist_id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id INTEGER, user_id INTEGER, invoker_id INTEGER, amount INTEGER, timestamp DATETIME);")
         conn.commit()
     finally:
         conn.close()

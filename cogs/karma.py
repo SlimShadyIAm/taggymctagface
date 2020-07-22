@@ -35,7 +35,7 @@ class CustomCommands(commands.Cog):
             conn = sqlite3.connect(db_path)
             c = conn.cursor()
             c.execute(
-                "SELECT * FROM karma WHERE user_id = ?;", (member.id,))
+                "SELECT * FROM karma WHERE user_id = ? AND guild_id = ?;", (member.id, ctx.guild.id,))
 
             res = c.fetchall()
 
@@ -49,9 +49,9 @@ class CustomCommands(commands.Cog):
                 conn = sqlite3.connect(db_path)
                 c = conn.cursor()
                 c.execute(
-                    "INSERT INTO karma (user_id, karma) VALUES (?,?);", (member.id, val,))
-                c.execute("INSERT INTO karma_history (user_id, invoker_id, amount, timestamp) VALUES (?,?,?,?)",
-                          (member.id, ctx.author.id, val, datetime.now().isoformat()))
+                    "INSERT INTO karma (user_id, guild_id, karma) VALUES (?,?,?);", (member.id, ctx.guild.id, val,))
+                c.execute("INSERT INTO karma_history (guild_id, user_id, invoker_id, amount, timestamp) VALUES (?, ?,?,?,?)",
+                          (ctx.guild.id, member.id, ctx.author.id, val, datetime.now().isoformat()))
                 conn.commit()
             finally:
                 conn.close()
@@ -61,9 +61,9 @@ class CustomCommands(commands.Cog):
                 conn = sqlite3.connect(db_path)
                 c = conn.cursor()
                 c.execute(
-                    "UPDATE karma SET karma = karma + ? WHERE user_id = ?;", (val, member.id,))
-                c.execute("INSERT INTO karma_history (user_id, invoker_id, amount, timestamp) VALUES (?,?,?,?)",
-                          (member.id, ctx.author.id, val, datetime.now().isoformat()))
+                    "UPDATE karma SET karma = karma + ? WHERE user_id = ? AND guild_id = ?;", (val, member.id, ctx.guild.id,))
+                c.execute("INSERT INTO karma_history (guild_id,user_id, invoker_id, amount, timestamp) VALUES (?,?,?,?,?)",
+                          (ctx.guild.id, member.id, ctx.author.id, val, datetime.now().isoformat()))
                 conn.commit()
             finally:
                 conn.close()
@@ -74,9 +74,9 @@ class CustomCommands(commands.Cog):
             conn = sqlite3.connect(db_path)
             c = conn.cursor()
             c.execute(
-                "SELECT * FROM karma WHERE user_id = ?;", (member.id,))
+                "SELECT * FROM karma WHERE user_id = ? AND guild_id = ?;", (member.id, ctx.guild.id,))
 
-            res = c.fetchall()[0][1]
+            res = c.fetchall()[0][2]
         finally:
             conn.close()
 
