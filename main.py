@@ -20,6 +20,7 @@ initial_extensions = [
     'cogs.errhandle',
     'cogs.help',
     'cogs.helpers',
+    'cogs.karma',
     'cogs.list',
     'cogs.ping',
     'cogs.rolecount',
@@ -50,15 +51,15 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(details='over r/ChromeOS', state='over r/ChromeOS', name='over r/ChromeOS', type=discord.ActivityType.watching))
     print(f'Successfully logged in and booted...!')
 
-    conn = sqlite3.connect('commands.sqlite')
-    c = conn.cursor()
-    c.execute(
-        "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='commands';")
-    res = c.fetchone()
-    if (res[0] == 0):
+    try:
+        conn = sqlite3.connect('commands.sqlite')
+        c = conn.cursor()
         c.execute("CREATE TABLE IF NOT EXISTS commands (command_id INTEGER PRIMARY KEY, server_id TEXT, user_who_added TEXT, command_name TEXT, no_of_uses INTEGER, response TEXT, args TEXT);")
-        c.execute("CREATE UNIQUE INDEX idx_command_id ON commands (command_id);")
-    conn.commit()
-    conn.close()
+        c.execute(
+            "CREATE TABLE IF NOT EXISTS karma (user_id INTEGER PRIMARY KEY, karma INTEGER);")
+        c.execute("CREATE TABLE IF NOT EXISTS karma_history (hist_id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, invoker_id INTEGER, amount INTEGER, timestamp DATETIME);")
+        conn.commit()
+    finally:
+        conn.close()
 
 bot.run(os.environ.get('TAGGY_TOKEN'), bot=True, reconnect=True)
