@@ -18,6 +18,7 @@ initial_extensions = [
     'cogs.delete',
     'cogs.device2board',
     'cogs.errhandle',
+    'cogs.getkarma',
     'cogs.help',
     'cogs.helpers',
     'cogs.history',

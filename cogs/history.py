@@ -29,7 +29,7 @@ class CustomCommands(commands.Cog):
         self.bot = bot
 
     @commands.command(name='history')
-    async def list(self, ctx, member: Member = None):
+    async def history(self, ctx, member: Member = None):
         """History of all karma, or a specific user's karma\nExample usage: `$history` or `$history @member`"""
 
         class Source(menus.GroupByPageSource):
@@ -86,6 +86,17 @@ class CustomCommands(commands.Cog):
                 pages = NewMenuPages(source=Source(
                     data, key=lambda t: 1, per_page=10), clear_reactions_after=True)
                 await pages.start(ctx)
+
+    @history.error
+    async def history_err(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}\nExample usage: `$history` or $history @member'))
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+        elif isinstance(error, commands.MissingPermissions):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You don't have permission to do this command!"))
+        else:
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
 
 
 def fetch_nick(id):
