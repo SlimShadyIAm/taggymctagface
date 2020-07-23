@@ -39,13 +39,19 @@ class CustomCommands(commands.Cog):
                 embed.set_footer(icon_url=ctx.author.avatar_url,
                                  text="Note: Nerds and Moderators were exlcluded from these results.")
                 embed.description = ""
+
+                pushables = []
                 for v in entry.items:
                     member = discord.utils.get(ctx.guild.members, id=v[0])
+                    if member and not ctx.channel.permissions_for(member).manage_messages:
+                        pushables.append(v)
+
+                for i, v in enumerate(pushables, start=1):
+                    member = discord.utils.get(ctx.guild.members, id=v[0])
                     if not member:
-                        embed.description += f'**Rank {v[2]}**: {fetch_nick(v[0])} with {v[1]} karma\n'
+                        embed.description += f'**Rank {i}**: {fetch_nick(v[0])} with {v[1]} karma\n'
                     else:
-                        if not ctx.channel.permissions_for(member).manage_messages:
-                            embed.description += f'**Rank {v[2]}**: {member.mention } with {v[1]} karma\n'
+                        embed.description += f'**Rank {i}**: {member.mention } with {v[1]} karma\n'
                 return embed
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
