@@ -25,14 +25,19 @@ class CustomCommands(commands.Cog):
             try:
                 conn = sqlite3.connect(db_path)
                 c = conn.cursor()
-                c.execute(
-                    "SELECT * FROM karma WHERE user_id = ?", (member.id,))
+                c.execute("SELECT karma, rank FROM ( SELECT karma, user_id, RANK() OVER ( ORDER BY karma DESC ) rank FROM karma WHERE guild_id = ?) WHERE user_id = ?;", (ctx.guild.id, member.id,))
                 data = c.fetchall()
             finally:
                 conn.close()
 
-            embed.description = f'{member.mention} has {data[0][2] if len(data) > 0 else "0"} karma'
-
+            embed.add_field(
+                name="Karma", value=f'{member.mention} has {data[0][0] if len(data) > 0 else "0"} karma')
+            if len(data) > 0:
+                embed.add_field(
+                    name="Rank", value=f'{member.mention} is ranked {data[0][1]} on the leaderboard')
+            else:
+                embed.add_field(
+                    name="Rank", value=f'{member.mention} is not on the leaderboard as no one has given them karma yet', inline=False)
         else:
             member_obj = discord.utils.get(ctx.guild.members, id=member)
             if member_obj is None:
@@ -54,20 +59,23 @@ class CustomCommands(commands.Cog):
                         conn = sqlite3.connect(db_path)
                         c = conn.cursor()
                         c.execute(
-                            "SELECT * FROM karma WHERE user_id = ?", (member,))
+                            "SELECT karma, rank FROM ( SELECT karma, user_id, RANK() OVER ( ORDER BY karma DESC ) rank FROM karma WHERE guild_id = ?) WHERE user_id = ?;", (ctx.guild.id, member,))
                         data = c.fetchall()
                     finally:
                         conn.close()
+
                     if len(data) > 0:
-                        embed.description = f'{nickname} has {data[0][2]} karma'
+                        embed.add_field(
+                            name="Rank", value=f'{member.mention} is ranked {data[0][1]} on the leaderboard')
                     else:
-                        embed.description = f'{nickname} has 0 karma'
+                        embed.add_field(
+                            name="Rank", value=f'{member.mention} is not on the leaderboard as no one has given them karma yet', inline=False)
             else:
                 try:
                     conn = sqlite3.connect(db_path)
                     c = conn.cursor()
                     c.execute(
-                        "SELECT * FROM karma WHERE user_id = ?", (member.id,))
+                        "SELECT karma, rank FROM ( SELECT karma, user_id, RANK() OVER ( ORDER BY karma DESC ) rank FROM karma WHERE guild_id = ?) WHERE user_id = ?;", (ctx.guild.id, member.id,))
                     data = c.fetchall()
                 finally:
                     conn.close()
