@@ -36,14 +36,16 @@ class CustomCommands(commands.Cog):
             async def format_page(self, menu, entry):
                 embed = Embed(
                     title=f'Leaderboard: Page {menu.current_page +1}/{self.get_max_pages()}')
+                embed.set_footer(
+                    text="Note: Nerds and Moderators were exlcluded from these results.")
                 embed.description = ""
                 for v in entry.items:
-                    print(v)
                     member = discord.utils.get(ctx.guild.members, id=v[0])
-                    member_text = ""
                     if not member:
-                        member_text = fetch_nick(v[0])
-                    embed.description += f'**Rank {v[2]}**: {member.mention if member else member_text} with {v[1]} karma\n'
+                        embed.description += f'**Rank {v[2]}**: {fetch_nick(v[0])} with {v[1]} karma\n'
+                    else:
+                        if not ctx.channel.permissions_for(member).manage_messages:
+                            embed.description += f'**Rank {v[2]}**: {member.mention } with {v[1]} karma\n'
                 return embed
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
