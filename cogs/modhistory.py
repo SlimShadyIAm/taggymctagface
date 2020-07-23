@@ -28,9 +28,9 @@ class CustomCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='history')
-    async def history(self, ctx, member: Member = None):
-        """History of all karma, or a specific user's karma\nExample usage: `$history` or `$history @member`"""
+    @commands.command(name='modhistory')
+    async def modhistory(self, ctx, member: Member):
+        """History of actions done by a given mod/nerd\nExample usage: `$modhistory <@member/id>`"""
 
         class Source(menus.GroupByPageSource):
             async def format_page(self, menu, entry):
@@ -52,46 +52,27 @@ class CustomCommands(commands.Cog):
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
-        if member is None:
-            try:
-                conn = sqlite3.connect(db_path)
-                c = conn.cursor()
-                c.execute(
-                    "SELECT * FROM karma_history WHERE guild_id = ? ORDER BY timestamp DESC", (ctx.guild.id,))
-                data = c.fetchall()
+        try:
+            conn = sqlite3.connect(db_path)
+            c = conn.cursor()
+            c.execute(
+                "SELECT * FROM karma_history WHERE guild_id = ? AND invoker_id = ? ORDER BY timestamp DESC", (ctx.guild.id, member.id,))
+            data = c.fetchall()
 
-            finally:
-                conn.close()
+        finally:
+            conn.close()
 
-            if (len(data) == 0):
-                await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="No history for this user!"))
-
-            else:
-                pages = NewMenuPages(source=Source(
-                    data, key=lambda t: 1, per_page=10), clear_reactions_after=True)
-                await pages.start(ctx)
+        if (len(data) == 0):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="No history for this user!"))
         else:
-            try:
-                conn = sqlite3.connect(db_path)
-                c = conn.cursor()
-                c.execute(
-                    "SELECT * FROM karma_history WHERE guild_id = ? AND user_id = ? ORDER BY timestamp DESC", (ctx.guild.id, member.id,))
-                data = c.fetchall()
+            pages = NewMenuPages(source=Source(
+                data, key=lambda t: 1, per_page=10), clear_reactions_after=True)
+            await pages.start(ctx)
 
-            finally:
-                conn.close()
-
-            if (len(data) == 0):
-                await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="No history in this guild!"))
-            else:
-                pages = NewMenuPages(source=Source(
-                    data, key=lambda t: 1, per_page=10), clear_reactions_after=True)
-                await pages.start(ctx)
-
-    @history.error
-    async def history_err(self, ctx, error):
+    @modhistory.error
+    async def modhistory_err(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}\nExample usage: `$history` or $history @member'))
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}\nExample usage: `$modhistory <@member/id>`'))
         elif isinstance(error, commands.BadArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
         elif isinstance(error, commands.MissingPermissions):

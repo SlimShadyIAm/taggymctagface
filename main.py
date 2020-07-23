@@ -25,6 +25,7 @@ initial_extensions = [
     'cogs.karma',
     'cogs.leaderboard',
     'cogs.list',
+    'cogs.modhistory',
     'cogs.ping',
     'cogs.rolecount',
     'cogs.rules',
@@ -64,6 +65,32 @@ async def on_ready():
         c.execute("CREATE TABLE IF NOT EXISTS karma_history (hist_id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id INTEGER, user_id INTEGER, invoker_id INTEGER, amount INTEGER, timestamp DATETIME);")
         c.execute(
             "CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, nickname TEXT, UNIQUE(user_id));")
+        conn.commit()
+    finally:
+        conn.close()
+
+
+@bot.event
+async def on_user_update(_, after):
+    await update_users_db(after)
+
+
+@bot.event
+async def on_member_join(member):
+    await update_users_db(member)
+
+
+@bot.event
+async def on_member_remove(member):
+    await update_users_db(member)
+
+
+async def update_users_db(member):
+    try:
+        conn = sqlite3.connect('commands.sqlite')
+        c = conn.cursor()
+        c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
+                  (member.id, f'{member.name}#{member.discriminator}',))
         conn.commit()
     finally:
         conn.close()

@@ -88,24 +88,27 @@ class CustomCommands(commands.Cog):
             conn = sqlite3.connect(db_path)
             c = conn.cursor()
             c.execute(
-                "SELECT * FROM karma WHERE user_id = ? AND guild_id = ?;", (member.id, ctx.guild.id,))
+                "SELECT karma, rank FROM ( SELECT karma, user_id, RANK() OVER ( ORDER BY karma DESC ) rank FROM karma WHERE guild_id = ?) WHERE user_id = ?;", (ctx.guild.id, member.id,))
 
-            res = c.fetchall()[0][2]
+            res = c.fetchall()[0]
         finally:
             conn.close()
 
-        embed = Embed(title=f"Updated user's karma!",
+        embed = Embed(title=f"Updated {member.name}#{member.discriminator}'s karma!",
                       color=Color(value=0x37b83b))
-        embed.add_field(name=f'User', value=member.mention)
-        embed.add_field(name=f'Invoker', value=ctx.author.mention)
+        embed.description = ""
         if val < 0:
-            embed.add_field(name=f'Karma taken', value=-1 * val)
+            embed.description += f'**Karma taken**: {-1 * val}\n'
         else:
-            embed.add_field(name=f'Karma given', value=val)
-        embed.add_field(name=f'Current karma', value=res)
+            embed.description += f'**Karma given**: {val}\n'
+        embed.description += f'**Current karma**: {res[0]}\n'
+        embed.description += f'**Leaderboard rank**: {res[1]}'
+        embed.set_footer(
+            text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
         # err handling
+
     @karma.error
     async def karma_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):

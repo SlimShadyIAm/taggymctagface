@@ -28,14 +28,14 @@ class CustomCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='leaderboard')
+    @commands.command(name='leaderboard', aliases=["lb"])
     async def leaderboard(self, ctx):
-        """Karma leaderboard in current guild"""
+        """(alias $lb) Karma leaderboard in current guild"""
 
         class Source(menus.GroupByPageSource):
             async def format_page(self, menu, entry):
                 embed = Embed(
-                    title=f'Leaderboard: Page {menu.current_page +1}/{self.get_max_pages()}')
+                    title=f'Leaderboard: Page {menu.current_page +1}/{self.get_max_pages()}', color=Color(value=0xfcba03))
                 embed.set_footer(
                     text="Note: Nerds and Moderators were exlcluded from these results.")
                 embed.description = ""

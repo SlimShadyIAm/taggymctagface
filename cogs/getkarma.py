@@ -14,13 +14,16 @@ class CustomCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='getkarma')
+    @commands.command(name='getkarma', aliases=["getrank"])
     async def getkarma(self, ctx, member: Union[Member, int]):
-        """Get a user's karma\nWorks with ID if the user has left the guild\nExample usage: `$getkarma @member` or `$getkarma 2342492304928`"""
+        """(alias $getrank) Get a user's karma\nWorks with ID if the user has left the guild\nExample usage: `$getkarma @member` or `$getkarma 2342492304928`"""
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
-        embed = Embed(title="Karma results", color=Color(value=0x37b83b))
+        embed = Embed(
+            title=f"Karma results for {member.name}#{member.discriminator}", color=Color(value=0x37b83b))
+        embed.set_footer(
+            text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
         if isinstance(member, Member):
             try:
                 conn = sqlite3.connect(db_path)
@@ -85,7 +88,7 @@ class CustomCommands(commands.Cog):
                     embed.description = f'{member.name}#{member.discriminator} has 0 karma'
         await ctx.send(embed=embed)
 
-    @getkarma.error
+    @ getkarma.error
     async def getkarma_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}\nExample usage: `$karma give @member 3` or `$karma take <ID> 3`'))
