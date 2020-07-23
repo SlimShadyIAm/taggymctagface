@@ -38,9 +38,16 @@ class CustomCommands(commands.Cog):
                     title=f'History: Page {menu.current_page +1}/{self.get_max_pages()}')
                 for v in entry.items:
                     member = discord.utils.get(ctx.guild.members, id=v[2])
+                    member_text = ""
+                    if not member:
+                        member_text = fetch_nick(v[2])
+                    invoker_text = ""
                     invoker = discord.utils.get(ctx.guild.members, id=v[3])
+                    if not invoker:
+                        invoker_text = fetch_nick(v[3])
+
                     embed.add_field(
-                        name=f'{v[0]}. {datetime.strptime(v[5], "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y-%m-%d %H:%M:%S")}', value=f'{invoker.mention} {f"gave {v[4]} karma to" if v[4] > 0 else f"took {-1 * v[4]} karma from "} {member.mention}', inline=False)
+                        name=f'{v[0]}. {datetime.strptime(v[5], "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y-%m-%d %H:%M:%S")}', value=f'{invoker.mention if invoker else invoker_text} {f"gave {v[4]} karma to" if v[4] > 0 else f"took {-1 * v[4]} karma from "} {member.mention if member else member_text}', inline=False)
                 return embed
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
@@ -79,6 +86,21 @@ class CustomCommands(commands.Cog):
                 pages = NewMenuPages(source=Source(
                     data, key=lambda t: 1, per_page=10), clear_reactions_after=True)
                 await pages.start(ctx)
+
+
+def fetch_nick(id):
+    BASE_DIR = dirname(dirname(abspath(__file__)))
+    db_path = os.path.join(BASE_DIR, "commands.sqlite")
+    try:
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
+        c.execute(
+            "SELECT nickname FROM users WHERE user_id = ?", (id,))
+        data = c.fetchall()
+
+    finally:
+        conn.close()
+    return data[0][0]
 
 
 def setup(bot):
