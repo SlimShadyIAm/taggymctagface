@@ -121,7 +121,7 @@ class CustomCommands(commands.Cog):
                 conn.commit()
             finally:
                 conn.close()
-            await channel.send(f"{role.mention} {member.mention} has karma over 100! Consider making him a nerd.")
+            await channel.send(f"{role.mention} {member.mention} has karma over 50! Consider making him a nerd.")
         elif res[3] == 0 and res[0] < -20:
             channel = discord.utils.get(ctx.guild.channels, name="bot-test" if os.environ.get(
                 'PRODUCTION') == "false" else "nerds")
@@ -135,7 +135,7 @@ class CustomCommands(commands.Cog):
                 conn.commit()
             finally:
                 conn.close()
-            await channel.send(f"{role.mention} {member.mention} has karma under -100! Consider disciplining him.")
+            await channel.send(f"{role.mention} {member.mention} has karma under -20! Consider disciplining him.")
 
     # err handling
     @ karma.error
