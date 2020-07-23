@@ -56,9 +56,12 @@ async def on_ready():
         conn = sqlite3.connect('commands.sqlite')
         c = conn.cursor()
         c.execute("CREATE TABLE IF NOT EXISTS commands (command_id INTEGER PRIMARY KEY, server_id TEXT, user_who_added TEXT, command_name TEXT, no_of_uses INTEGER, response TEXT, args TEXT);")
+        # c.execute("DROP TABLE users")
         c.execute(
-            "CREATE TABLE IF NOT EXISTS karma (user_id INTEGER, guild_id INTEGER, karma INTEGER, PRIMARY KEY (user_id, guild_id));")
+            "CREATE TABLE IF NOT EXISTS karma (user_id INTEGER, guild_id INTEGER, karma INTEGER, PRIMARY KEY (user_id, guild_id), CONSTRAINT uid FOREIGN KEY (user_id) REFERENCES users(user_id));")
         c.execute("CREATE TABLE IF NOT EXISTS karma_history (hist_id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id INTEGER, user_id INTEGER, invoker_id INTEGER, amount INTEGER, timestamp DATETIME);")
+        c.execute(
+            "CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, nickname TEXT, UNIQUE(user_id));")
         conn.commit()
     finally:
         conn.close()

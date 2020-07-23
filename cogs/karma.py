@@ -25,13 +25,20 @@ class CustomCommands(commands.Cog):
             raise commands.BadArgument(
                 "You can give or take 1-3 karma in a command!\nExample usage: `$karma give @member 3` or `$karma take <ID> 3`")
 
+        if member.bot:
+            raise commands.BadArgument(
+                "You can't give a bot karma")
+
+        if member.id == ctx.author.id and member.id != self.bot.owner_id:
+            raise commands.BadArgument(
+                "You can't give yourself karma")
+
         if action == "take":
             val = -1 * val
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
         try:
-            # ensure this command name isn't in use (you can have the same command name with arg type true and false)
             conn = sqlite3.connect(db_path)
             c = conn.cursor()
             c.execute(
@@ -45,13 +52,16 @@ class CustomCommands(commands.Cog):
         if len(res) == 0:
             # this user doesn't have karma yet
             try:
-                # ensure this command name isn't in use (you can have the same command name with arg type true and false)
                 conn = sqlite3.connect(db_path)
                 c = conn.cursor()
                 c.execute(
-                    "INSERT INTO karma (user_id, guild_id, karma) VALUES (?,?,?);", (member.id, ctx.guild.id, val,))
-                c.execute("INSERT INTO karma_history (guild_id, user_id, invoker_id, amount, timestamp) VALUES (?, ?,?,?,?)",
+                    "INSERT INTO karma (user_id, guild_id, karma) VALUES (?,?,?);", (member.id, ctx.guild.id, val))
+                c.execute("INSERT INTO karma_history (guild_id, user_id, invoker_id, amount, timestamp) VALUES (?,?,?,?,?)",
                           (ctx.guild.id, member.id, ctx.author.id, val, datetime.now().isoformat()))
+                c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
+                          (member.id, f'{member.name}#{member.discriminator}',))
+                c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
+                          (ctx.author.id, f'{ctx.author.name}#{ctx.author.discriminator}',))
                 conn.commit()
             finally:
                 conn.close()
@@ -64,6 +74,10 @@ class CustomCommands(commands.Cog):
                     "UPDATE karma SET karma = karma + ? WHERE user_id = ? AND guild_id = ?;", (val, member.id, ctx.guild.id,))
                 c.execute("INSERT INTO karma_history (guild_id,user_id, invoker_id, amount, timestamp) VALUES (?,?,?,?,?)",
                           (ctx.guild.id, member.id, ctx.author.id, val, datetime.now().isoformat()))
+                c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
+                          (member.id, f'{member.name}#{member.discriminator}',))
+                c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
+                          (ctx.author.id, f'{ctx.author.name}#{ctx.author.discriminator}',))
                 conn.commit()
             finally:
                 conn.close()
