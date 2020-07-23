@@ -36,8 +36,8 @@ class CustomCommands(commands.Cog):
             async def format_page(self, menu, entry):
                 embed = Embed(
                     title=f'Leaderboard: Page {menu.current_page +1}/{self.get_max_pages()}', color=Color(value=0xfcba03))
-                embed.set_footer(
-                    text="Note: Nerds and Moderators were exlcluded from these results.")
+                embed.set_footer(icon_url=ctx.author.avatar_url,
+                                 text="Note: Nerds and Moderators were exlcluded from these results.")
                 embed.description = ""
                 for v in entry.items:
                     member = discord.utils.get(ctx.guild.members, id=v[0])
@@ -67,7 +67,7 @@ class CustomCommands(commands.Cog):
                 data, key=lambda t: 1, per_page=10), clear_reactions_after=True)
             await pages.start(ctx)
 
-    @leaderboard.error
+    @ leaderboard.error
     async def leaderboard_err(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}\nExample usage: `$history` or $history @member'))
