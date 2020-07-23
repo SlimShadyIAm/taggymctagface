@@ -66,10 +66,10 @@ class CustomCommands(commands.Cog):
 
                     if len(data) > 0:
                         embed.add_field(
-                            name="Rank", value=f'{member.mention} is ranked {data[0][1]} on the leaderboard')
+                            name="Rank", value=f'{nickname} is ranked {data[0][1]} on the leaderboard')
                     else:
                         embed.add_field(
-                            name="Rank", value=f'{member.mention} is not on the leaderboard as no one has given them karma yet', inline=False)
+                            name="Rank", value=f'{nickname} is not on the leaderboard as no one has given them karma yet', inline=False)
             else:
                 try:
                     conn = sqlite3.connect(db_path)

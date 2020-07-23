@@ -23,6 +23,7 @@ initial_extensions = [
     'cogs.helpers',
     'cogs.history',
     'cogs.karma',
+    'cogs.leaderboard',
     'cogs.list',
     'cogs.ping',
     'cogs.rolecount',
