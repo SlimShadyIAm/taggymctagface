@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from discord import Color, Embed, Member
 from os.path import abspath, dirname
@@ -88,7 +89,7 @@ class CustomCommands(commands.Cog):
             conn = sqlite3.connect(db_path)
             c = conn.cursor()
             c.execute(
-                "SELECT karma, rank FROM ( SELECT karma, user_id, RANK() OVER ( ORDER BY karma DESC ) rank FROM karma WHERE guild_id = ?) WHERE user_id = ?;", (ctx.guild.id, member.id,))
+                "SELECT karma, rank, notified_good, notified_bad FROM ( SELECT karma, user_id, notified_good, notified_bad, RANK() OVER ( ORDER BY karma DESC ) rank FROM karma WHERE guild_id = ?) WHERE user_id = ?;", (ctx.guild.id, member.id,))
 
             res = c.fetchall()[0]
         finally:
@@ -107,9 +108,37 @@ class CustomCommands(commands.Cog):
             text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
-        # err handling
+        if res[2] == 0 and res[0] > 50:
+            channel = discord.utils.get(ctx.guild.channels, name="bot-test" if os.environ.get(
+                'PRODUCTION') == "false" else "nerds")
+            role = discord.utils.get(ctx.guild.roles, name="bot tester" if os.environ.get(
+                'PRODUCTION') == "false" else "Moderators")
+            try:
+                conn = sqlite3.connect(db_path)
+                c = conn.cursor()
+                c.execute(
+                    "UPDATE karma SET notified_good = 1 WHERE user_id = ? AND guild_id = ?;", (member.id, ctx.guild.id,))
+                conn.commit()
+            finally:
+                conn.close()
+            await channel.send(f"{role.mention} {member.mention} has karma over 100! Consider making him a nerd.")
+        elif res[3] == 0 and res[0] < -20:
+            channel = discord.utils.get(ctx.guild.channels, name="bot-test" if os.environ.get(
+                'PRODUCTION') == "false" else "nerds")
+            role = discord.utils.get(ctx.guild.roles, name="bot tester" if os.environ.get(
+                'PRODUCTION') == "false" else "Moderators")
+            try:
+                conn = sqlite3.connect(db_path)
+                c = conn.cursor()
+                c.execute(
+                    "UPDATE karma SET notified_bad = 1 WHERE user_id = ? AND guild_id = ?;", (member.id, ctx.guild.id,))
+                conn.commit()
+            finally:
+                conn.close()
+            await channel.send(f"{role.mention} {member.mention} has karma under -100! Consider disciplining him.")
 
-    @karma.error
+    # err handling
+    @ karma.error
     async def karma_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}\nExample usage: `$karma give @member 3` or `$karma take <ID> 3`'))
