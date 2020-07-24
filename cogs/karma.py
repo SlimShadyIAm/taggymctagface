@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from discord import Color, Embed, Member
 from os.path import abspath, dirname
+import sys
+import traceback
 import sqlite3
 import asyncio
 import os
@@ -148,6 +150,8 @@ class CustomCommands(commands.Cog):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You don't have permission to do this command!"))
         else:
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+            traceback.print_exception(
+                type(error), error, error.__traceback__, file=sys.stderr)
 
 
 def setup(bot):
