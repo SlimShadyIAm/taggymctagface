@@ -1,8 +1,11 @@
 import os
 import random
 import sqlite3
-from os.path import abspath, dirname
+import sys
+import traceback
 from datetime import datetime
+from os.path import abspath, dirname
+
 import discord
 from discord import Color, Embed, Member
 from discord.ext import commands, menus
@@ -83,6 +86,8 @@ class CustomCommands(commands.Cog):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You don't have permission to do this command!"))
         else:
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+            traceback.print_exception(
+                type(error), error, error.__traceback__, file=sys.stderr)
 
 
 def fetch_nick(id):
