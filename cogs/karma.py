@@ -1,13 +1,16 @@
-import discord
-from discord.ext import commands
-from discord import Color, Embed, Member
-from os.path import abspath, dirname
-import sys
-import traceback
-import sqlite3
 import asyncio
 import os
+import re
+import sqlite3
+import sys
+import traceback
 from datetime import datetime
+from os.path import abspath, dirname
+from typing import Optional
+
+import discord
+from discord import Color, Embed, Member
+from discord.ext import commands
 
 
 class CustomCommands(commands.Cog):
@@ -16,17 +19,23 @@ class CustomCommands(commands.Cog):
 
     @commands.command(name='karma')
     @commands.has_permissions(manage_messages=True)
-    async def karma(self, ctx, action: str, member: Member, val: int):
-        """Give or take karma from a user.\nYou may give or take up to 3 karma in a single command.\nExample usage: `$karma give @member 3` or `$karma take <ID> 3`"""
+    async def karma(self, ctx, action: str, member: Member, val: int, *, reason: Optional[str]):
+        """Give or take karma from a user.\nYou may give or take up to 3 karma in a single command.\nOptionally, you can include an argument.\nExample usage: `$karma give @member 3 reason blah blah blah` or `$karma take <ID> 3`"""
+        # print(reason)
+        # if reason is not None:
+        #     pattern = re.compile(r"^[a-zA-Z0-9\s_-]*$")
+        #     if (not pattern.match(reason)):
+        #         raise commands.BadArgument(
+        #             "The reason should only be alphanumeric characters with `_` and `-`!\nExample usage:`$karma give @member 3 reason blah blah blah` or `$karma take <ID> 3`")
 
         action = action.lower()
         if action != "give" and action != "take":
             raise commands.BadArgument(
-                "The action should be either \"give\" or \"take\"\nExample usage: `$karma give @member 3` or `$karma take <ID> 3`")
+                "The action should be either \"give\" or \"take\"\nExample usage: `$karma give @member 3 reason blah blah blah` or `$karma take <ID> 3`")
 
         if val < 1 or val > 3:
             raise commands.BadArgument(
-                "You can give or take 1-3 karma in a command!\nExample usage: `$karma give @member 3` or `$karma take <ID> 3`")
+                "You can give or take 1-3 karma in a command!\nExample usage: `$karma give @member 3 reason blah blah blah` or `$karma take <ID> 3`")
 
         if member.bot:
             raise commands.BadArgument(
@@ -59,8 +68,8 @@ class CustomCommands(commands.Cog):
                 c = conn.cursor()
                 c.execute(
                     "INSERT INTO karma (user_id, guild_id, karma) VALUES (?,?,?);", (member.id, ctx.guild.id, val))
-                c.execute("INSERT INTO karma_history (guild_id, user_id, invoker_id, amount, timestamp) VALUES (?,?,?,?,?)",
-                          (ctx.guild.id, member.id, ctx.author.id, val, datetime.now().isoformat()))
+                c.execute("INSERT INTO karma_history (guild_id, user_id, invoker_id, amount, timestamp, reason) VALUES (?,?,?,?,?,?)",
+                          (ctx.guild.id, member.id, ctx.author.id, val, datetime.now().isoformat(), reason))
                 c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
                           (member.id, f'{member.name}#{member.discriminator}',))
                 c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
@@ -75,8 +84,8 @@ class CustomCommands(commands.Cog):
                 c = conn.cursor()
                 c.execute(
                     "UPDATE karma SET karma = karma + ? WHERE user_id = ? AND guild_id = ?;", (val, member.id, ctx.guild.id,))
-                c.execute("INSERT INTO karma_history (guild_id,user_id, invoker_id, amount, timestamp) VALUES (?,?,?,?,?)",
-                          (ctx.guild.id, member.id, ctx.author.id, val, datetime.now().isoformat()))
+                c.execute("INSERT INTO karma_history (guild_id,user_id, invoker_id, amount, timestamp, reason) VALUES (?,?,?,?,?,?)",
+                          (ctx.guild.id, member.id, ctx.author.id, val, datetime.now().isoformat(), reason))
                 c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
                           (member.id, f'{member.name}#{member.discriminator}',))
                 c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
@@ -105,7 +114,8 @@ class CustomCommands(commands.Cog):
         else:
             embed.description += f'**Karma given**: {val}\n'
         embed.description += f'**Current karma**: {res[0]}\n'
-        embed.description += f'**Leaderboard rank**: {res[1]}'
+        embed.description += f'**Leaderboard rank**: {res[1]}\n'
+        embed.description += f'**Reason**: {reason if reason is not None else "No reason."}'
         embed.set_footer(
             text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
@@ -143,7 +153,7 @@ class CustomCommands(commands.Cog):
     @ karma.error
     async def karma_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}\nExample usage: `$karma give @member 3` or `$karma take <ID> 3`'))
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}\nExample usage: `$karma give @member 3 reason blah blah blah` or `$karma take <ID> 3`'))
         elif isinstance(error, commands.BadArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
         elif isinstance(error, commands.MissingPermissions):

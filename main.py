@@ -64,6 +64,7 @@ async def on_ready():
         c.execute("CREATE TABLE IF NOT EXISTS karma_history (hist_id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id INTEGER, user_id INTEGER, invoker_id INTEGER, amount INTEGER, timestamp DATETIME);")
         c.execute(
             "CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, nickname TEXT, UNIQUE(user_id));")
+        #c.execute("ALTER TABLE karma_history ADD reason TEXT DEFAULT 'No reason.'")
         conn.commit()
     finally:
         conn.close()
