@@ -30,6 +30,7 @@ initial_extensions = [
     'cogs.rolecount',
     'cogs.rules',
     'cogs.search',
+    'cogs.setkarma',
     'cogs.stats',
     'cogs.timeout'
 ]

@@ -17,25 +17,10 @@ class CustomCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='karma')
-    @commands.has_permissions(manage_messages=True)
-    async def karma(self, ctx, action: str, member: Member, val: int, *, reason: Optional[str]):
-        """Give or take karma from a user.\nYou may give or take up to 3 karma in a single command.\nOptionally, you can include a reason as an argument.\nExample usage: `$karma give @member 3 reason blah blah blah` or `$karma take <ID> 3`"""
-        # print(reason)
-        # if reason is not None:
-        #     pattern = re.compile(r"^[a-zA-Z0-9\s_-]*$")
-        #     if (not pattern.match(reason)):
-        #         raise commands.BadArgument(
-        #             "The reason should only be alphanumeric characters with `_` and `-`!\nExample usage:`$karma give @member 3 reason blah blah blah` or `$karma take <ID> 3`")
-
-        action = action.lower()
-        if action != "give" and action != "take":
-            raise commands.BadArgument(
-                "The action should be either \"give\" or \"take\"\nExample usage: `$karma give @member 3 reason blah blah blah` or `$karma take <ID> 3`")
-
-        if val < 1 or val > 3:
-            raise commands.BadArgument(
-                "You can give or take 1-3 karma in a command!\nExample usage: `$karma give @member 3 reason blah blah blah` or `$karma take <ID> 3`")
+    @commands.command(name='setkarma')
+    @commands.has_permissions(administrator=True)
+    async def karma(self, ctx, member: Member, val: int, *, reason: Optional[str]):
+        """Force set a user's karma. Admin only. Optionally, you can include an argument.\nExample usage: `$setkarma @member 234233 reason blah blah blah` or `$karma <ID> 3`"""
 
         if member.bot:
             raise commands.BadArgument(
@@ -44,9 +29,6 @@ class CustomCommands(commands.Cog):
         if member.id == ctx.author.id and member.id != self.bot.owner_id:
             raise commands.BadArgument(
                 "You can't give yourself karma")
-
-        if action == "take":
-            val = -1 * val
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = os.path.join(BASE_DIR, "commands.sqlite")
@@ -83,7 +65,7 @@ class CustomCommands(commands.Cog):
                 conn = sqlite3.connect(db_path)
                 c = conn.cursor()
                 c.execute(
-                    "UPDATE karma SET karma = karma + ? WHERE user_id = ? AND guild_id = ?;", (val, member.id, ctx.guild.id,))
+                    "UPDATE karma SET karma = ? WHERE user_id = ? AND guild_id = ?;", (val, member.id, ctx.guild.id,))
                 c.execute("INSERT INTO karma_history (guild_id,user_id, invoker_id, amount, timestamp, reason) VALUES (?,?,?,?,?,?)",
                           (ctx.guild.id, member.id, ctx.author.id, val, datetime.now().isoformat(), reason))
                 c.execute("INSERT OR REPLACE INTO users (user_id, nickname) VALUES(?,?)",
