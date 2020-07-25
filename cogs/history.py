@@ -47,7 +47,7 @@ class CustomCommands(commands.Cog):
                         invoker_text = fetch_nick(v[3])
 
                     embed.add_field(
-                        name=f'{v[0]}. {datetime.strptime(v[5], "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y-%m-%d %H:%M:%S")}', value=f'{invoker.mention if invoker else invoker_text} {f"gave {v[4]} karma to" if v[4] > 0 else f"took {-1 * v[4]} karma from "} {member.mention if member else member_text}\**nReason**: {v[6]}', inline=False)
+                        name=f'{v[0]}. {datetime.strptime(v[5], "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y-%m-%d %H:%M:%S")}', value=f'{invoker.mention if invoker else invoker_text} {f"gave {v[4]} karma to" if v[4] > 0 else f"took {-1 * v[4]} karma from "} {member.mention if member else member_text}\n**nReason**: {v[6]}', inline=False)
                 return embed
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
