@@ -144,7 +144,7 @@ class DealWatcher(commands.Cog):
         guild_channels = self.bot.get_guild(guild_id).channels
         guild_roles = self.bot.get_guild(guild_id).roles
         channel = discord.utils.get(guild_channels, name="deals-and-updates")
-        role = discord.utils.get(guild_roles, name="Brunch")
+        role = discord.utils.get(guild_roles, name="Deals")
         await (channel.send(f'{role.mention} New deal was posted!\n{post.title}\n{post.link}'))
 
 
