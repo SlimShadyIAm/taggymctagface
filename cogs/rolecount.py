@@ -6,7 +6,7 @@ from discord import Color, Embed
 from discord.ext import commands, tasks
 
 
-class Utilities(commands.Cog):    
+class Utilities(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.rolecount.start()
@@ -17,12 +17,13 @@ class Utilities(commands.Cog):
     @tasks.loop(seconds=30)
     async def rolecount(self):
         """Track number of users with a given role"""
-        guild_id = 525250440212774912 if os.environ.get('PRODUCTION') == "false" else 253908290105376768
+        guild_id = 525250440212774912 if os.environ.get(
+            'PRODUCTION') == "false" else 253908290105376768
         guild = self.bot.get_guild(guild_id)
         guild_channels = guild.channels
         channel = discord.utils.get(guild_channels, name="assign-roles")
         messages = await channel.history(limit=10).flatten()
-        
+
         roles_to_track = ["iOS", "macOS", "watchOS"] if os.environ.get('PRODUCTION') == "false" else [
             "Acer",
             "HP",
@@ -37,12 +38,13 @@ class Utilities(commands.Cog):
             "Beta Channel",
             "Dev Channel",
             "Canary Channel",
+            "Brunch",
             "Developer Mode",
             "Helpers",
             "Announcements",
             "Deals",
             "Chromium",
-            ]
+        ]
         response = "These statistics reload every 30 seconds.\n"
         for role in roles_to_track:
             role_obj = discord.utils.get(guild.roles, name=role)
@@ -53,10 +55,13 @@ class Utilities(commands.Cog):
             if (message.author == self.bot.user):
                 await message.edit(embed=embed)
                 return
-        
+
         await channel.send(embed=embed)
+
     @rolecount.before_loop
     async def before_rolecount(self):
         await self.bot.wait_until_ready()
+
+
 def setup(bot):
     bot.add_cog(Utilities(bot))
