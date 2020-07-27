@@ -25,7 +25,6 @@ class Brunch(commands.Cog):
     async def watcher(self):
         # wait for bot to start
         await self.bot.wait_until_ready()
-        await self.push_update(self.prev_data.entries[0])
         while not self.loop.cancelled():
             kwargs = dict(modified=self.prev_data.modified if hasattr(self.prev_data, 'modified')
                           else None, etag=self.prev_data.etag if hasattr(self.prev_data, 'modified') else None)
