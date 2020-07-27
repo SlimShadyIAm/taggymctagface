@@ -9,6 +9,7 @@ from discord.ext import commands, tasks
 
 bott = None
 
+
 class DealWatcher(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -50,7 +51,8 @@ class DealWatcher(commands.Cog):
         # create watcher thread for all feeds, store in dict to cancel if needed
         self.loops = {}
         for feed in self.feeds:
-            self.loops[feed["name"]] = asyncio.get_event_loop().create_task(self.watcher(feed))
+            self.loops[feed["name"]] = asyncio.get_event_loop(
+            ).create_task(self.watcher(feed))
 
     # before unloading cog, stop all watcher threads
     def cog_unload(self):
@@ -66,48 +68,54 @@ class DealWatcher(commands.Cog):
             if feed['good_feed'] is True:
                 await self.good_feed(feed)
             else:
-                await self.bad_feed(feed) 
-            
+                await self.bad_feed(feed)
+
             # loop every 60 seconds
             await asyncio.sleep(60)
-        
 
     # feed watcher for feeds with proper etag support
+
     async def good_feed(self, feed):
-        #determine args (from cached data)
-        kwargs = dict(modified=feed["prev_data"].modified if hasattr(feed["prev_data"], 'modified') else None, etag=feed["prev_data"].etag if hasattr(feed["prev_data"], 'modified')  else None)
+        # determine args (from cached data)
+        kwargs = dict(modified=feed["prev_data"].modified if hasattr(feed["prev_data"], 'modified')
+                      else None, etag=feed["prev_data"].etag if hasattr(feed["prev_data"], 'modified') else None)
         # fetch feed data w/ args
-        data = feedparser.parse(feed["feed"], **{k: v for k, v in kwargs.items() if v is not None})
+        data = feedparser.parse(
+            feed["feed"], **{k: v for k, v in kwargs.items() if v is not None})
 
         # has the feed changed?
         if (data.status != 304):
             # get newest post date from cached data. any new post will have a date newer than this
-            max_prev_date = max([something["published_parsed"] for something in feed["prev_data"].entries])
+            max_prev_date = max([something["published_parsed"]
+                                 for something in feed["prev_data"].entries])
             # get new posts
-            new_posts = [post for post in data.entries if post["published_parsed"] > max_prev_date]
+            new_posts = [
+                post for post in data.entries if post["published_parsed"] > max_prev_date]
             # if there rae new posts
             if (len(new_posts) > 0):
                 # check thier tags
                 for post in new_posts:
                     print(f'NEW GOOD ENTRY: {post.title} {post.link}')
-                await self.check_new_entries(feed, new_posts)  
-        
+                await self.check_new_entries(feed, new_posts)
+
         feed["prev_data"] = data
 
     # improper etag support
     async def bad_feed(self, feed):
-        #fetch feed data
+        # fetch feed data
         data = feedparser.parse(feed["feed"])
         # get newest post date from cached data. any new post will have a date newer than this
-        max_prev_date = max([something["published_parsed"] for something in feed["prev_data"].entries])
+        max_prev_date = max([something["published_parsed"]
+                             for something in feed["prev_data"].entries])
         # get new posts
-        new_posts = [post for post in data.entries if post["published_parsed"] > max_prev_date]
+        new_posts = [
+            post for post in data.entries if post["published_parsed"] > max_prev_date]
         # if there rae new posts
         if (len(new_posts) > 0):
             # check thier tags
             for post in new_posts:
                 print(f'NEW BAD ENTRY: {post.title} {post.link}')
-            await self.check_new_entries(feed, new_posts)   
+            await self.check_new_entries(feed, new_posts)
         feed["prev_data"] = data
 
     async def check_new_entries(self, feed, entries):
@@ -117,23 +125,29 @@ class DealWatcher(commands.Cog):
             post_tags = [tag.term.lower() for tag in entry.tags]
             if len(feed["requiredFilters"]) != 0:
                 match = [tag for tag in feed["filters"] if tag in post_tags]
-                match_required = [tag for tag in feed["requiredFilters"] if tag in post_tags]
+                match_required = [
+                    tag for tag in feed["requiredFilters"] if tag in post_tags]
                 if (len(match) > 0 and len(match_required) > 0):
-                    print(f'MATCH FOUND DEAL {entry.title}, {entry.link}, {entry.tags}')
+                    print(
+                        f'MATCH FOUND DEAL {entry.title}, {entry.link}, {entry.tags}')
                     await self.push_update(entry, feed)
             else:
                 match = [tag for tag in feed["filters"] if tag in post_tags]
                 if (len(match) > 0):
-                    print(f'MATCH FOUND DEAL {entry.title}, {entry.link}, {entry.tags}')
+                    print(
+                        f'MATCH FOUND DEAL {entry.title}, {entry.link}, {entry.tags}')
                     await self.push_update(entry, feed)
 
-
     async def push_update(self, post, feed):
-        guild_id = 525250440212774912 if os.environ.get('PRODUCTION') == "false" else 253908290105376768
+        guild_id = 525250440212774912 if os.environ.get(
+            'PRODUCTION') == "false" else 253908290105376768
         guild_channels = self.bot.get_guild(guild_id).channels
+        guild_roles = self.bot.get_guild(guild_id).roles
         channel = discord.utils.get(guild_channels, name="deals-and-updates")
-        await (channel.send(f'New deal was posted!\n{post.title}\n{post.link}'))
-    
+        role = discord.utils.get(guild_roles, name="Brunch")
+        await (channel.send(f'{role.mention} New deal was posted!\n{post.title}\n{post.link}'))
+
+
 def setup(bot):
     dw = DealWatcher(bot)
     bot.add_cog(dw)
