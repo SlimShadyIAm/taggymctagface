@@ -69,8 +69,8 @@ class CustomCommands(commands.Cog):
         embed.add_field(name=f'Command name', value=command_name)
         embed.add_field(name=f'Args supported?', value=args_flag)
         if response != "":
-            response = response[:100] + "..." if len(response) > 100 else response
-            embed.add_field(name=f'Response', value=response)
+            temp = response[:100] + "..." if len(response) > 100 else response
+            embed.add_field(name=f'Response', value=temp)
         embed.set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
         
         # does a command with this name and arg type already exist?
