@@ -12,7 +12,6 @@ initial_extensions = [
     'cogs.admin',
     'cogs.birthday',
     'cogs.board2device',
-    'cogs.brunch',
     'cogs.crosblog',
     'cogs.crosupdates',
     'cogs.dealwatcher',
