@@ -38,7 +38,6 @@ class Utilities(commands.Cog):
             "Beta Channel",
             "Dev Channel",
             "Canary Channel",
-            "Brunch",
             "Developer Mode",
             "Helpers",
             "Announcements",
