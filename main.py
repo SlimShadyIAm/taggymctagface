@@ -35,8 +35,12 @@ initial_extensions = [
     'cogs.timeout'
 ]
 
+intents = discord.Intents.default()
+intents.members = True
+intents.messages = True
+
 bot = commands.Bot(command_prefix="$",
-                   description='Taggy McTagface', case_insensitive=True)
+                   description='Taggy McTagface', case_insensitive=True, intents=intents)
 
 if __name__ == '__main__':
     bot.remove_command("help")
