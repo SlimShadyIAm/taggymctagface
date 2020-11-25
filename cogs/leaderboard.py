@@ -40,7 +40,7 @@ class CustomCommands(commands.Cog):
                 embed = Embed(
                     title=f'Leaderboard: Page {menu.current_page +1}/{self.get_max_pages()}', color=Color(value=0xfcba03))
                 embed.set_footer(icon_url=ctx.author.avatar_url,
-                                 text="Note: Nerds and Moderators were exlcluded from these results.")
+                                 text="Note: Nerds and Moderators were excluded from these results.")
                 embed.description = ""
 
                 pushables = []
