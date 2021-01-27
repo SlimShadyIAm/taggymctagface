@@ -2,6 +2,7 @@ import discord
 from discord import Embed, Color
 from discord.ext import commands
 import aiohttp, asyncio, json
+import traceback
 
 class Utilities(commands.Cog):
     def __init__(self, bot):
@@ -37,10 +38,16 @@ class Utilities(commands.Cog):
                 embed.add_field(name=f'Stable Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
                 
                 version = data_board["Beta"].split("<br>")
-                embed.add_field(name=f'Beta Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
+                if len(version) == 2:
+                    embed.add_field(name=f'Beta Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
+                else:
+                    embed.add_field(name=f'Beta Channel', value=f'**Version**: {data_board["Beta"]}')
                 
                 version = data_board["Dev"].split("<br>")
-                embed.add_field(name=f'Dev Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
+                if len(version) == 2:
+                    embed.add_field(name=f'Dev Channel', value=f'**Version**: {version[1]}\n**Platform**: {version[0]}')
+                else:
+                    embed.add_field(name=f'Dev Channel', value=f'**Version**: {data["Dev"]}')
                 
                 if (data_board["Canary"] is not None):
                     version = data_board["Canary"].split("<br>")
@@ -62,6 +69,9 @@ class Utilities(commands.Cog):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need to supply a board name! Example: `$updates coral`"))
         elif isinstance(error, commands.BadArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="The board should only be alphabetical characters!"))
+        else:
+            await ctx.send(embed=Embed(title="A fatal error occured!", color=Color(value=0xEB4634), description="Tell slim :("))
+            traceback.print_exc()
 
 def setup(bot):
     bot.add_cog(Utilities(bot))

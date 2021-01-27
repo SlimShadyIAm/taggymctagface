@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "taggymctagface"
+version = "0.1.0"
+description = ""
+authors = ["Aamir Farooq <aamir@farooq.xyz>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+feedparser = "^6.0.2"
+"discord.py" = "^1.6.0"
+psutil = "^5.8.0"
+aiohttp = "^3.7.3"
+discord-ext-menus = {git = "https://github.com/Rapptz/discord-ext-menus"}
+
+[tool.poetry.dev-dependencies]
+pylint = "^2.6.0"
+rope = "^0.18.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
